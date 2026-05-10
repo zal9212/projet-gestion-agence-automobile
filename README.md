@@ -36,11 +36,6 @@ Teranga Auto ERP est une solution de gestion de location de voitures complète, 
 3.  **Configuration** : Modifiez les accès à la base de données dans le fichier `app/config.php`.
 4.  **Lancer l'application** : Accédez à l'URL via votre navigateur (ex: `http://localhost/pjgv`).
 
----
-
-## Accès par défaut
-*   **Administrateur** : saliou@gmail.com / 1234
-*   **Agent (Employé)** : agent@teranga.sn / 1234
 
 ---
 
