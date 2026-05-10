@@ -13,6 +13,7 @@ $isEdit = isset($member) && $member;
     <div class="col-lg-6">
         <div class="card border-0 shadow-sm rounded-4 p-5">
             <form action="index.php?action=admin_staff_save" method="POST">
+                <?= csrf_field() ?>
                 <?php if($isEdit): ?>
                     <input type="hidden" name="id" value="<?= $member['id'] ?>">
                 <?php endif; ?>

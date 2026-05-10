@@ -52,7 +52,7 @@
                         <td class="text-end">
                             <a href="index.php?action=admin_staff_form&id=<?= $s['id'] ?>" class="btn btn-light btn-sm rounded-circle me-2"><i class="fa-solid fa-pen"></i></a>
                             <?php if($s['id'] != $_SESSION['user_id']): ?>
-                                <a href="index.php?action=admin_staff_delete&id=<?= $s['id'] ?>" class="btn btn-light btn-sm rounded-circle text-danger" onclick="return confirm('Supprimer ce membre ?')"><i class="fa-solid fa-trash"></i></a>
+                                <a href="index.php?action=admin_staff_delete&id=<?= $s['id'] ?>&csrf_token=<?= generate_csrf_token() ?>" class="btn btn-light btn-sm rounded-circle text-danger" onclick="return confirm('Supprimer ce membre ?')"><i class="fa-solid fa-trash"></i></a>
                             <?php endif; ?>
                         </td>
                     </tr>

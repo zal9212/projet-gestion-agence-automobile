@@ -28,7 +28,7 @@
                     <?php endif; ?>
                 </td>
                 <td class="pe-4 text-end">
-                    <a href="index.php?action=admin_crm_blacklist&id=<?= $u['id'] ?>" class="btn btn-light btn-sm rounded-circle" title="<?= $u['is_blacklisted'] ? 'Réhabiliter' : 'Bannir' ?>" onclick="return confirm('Modifier le statut de ce client ?');">
+                    <a href="index.php?action=admin_crm_blacklist&id=<?= $u['id'] ?>&csrf_token=<?= generate_csrf_token() ?>" class="btn btn-light btn-sm rounded-circle" title="<?= $u['is_blacklisted'] ? 'Réhabiliter' : 'Bannir' ?>" onclick="return confirm('Modifier le statut de ce client ?');">
                         <i class="fa-solid <?= $u['is_blacklisted'] ? 'fa-check text-success' : 'fa-ban text-danger' ?>"></i>
                     </a>
                     <a href="index.php?action=admin_crm_view&id=<?= $u['id'] ?>" class="btn btn-light btn-sm rounded-circle"><i class="fa-solid fa-eye text-primary"></i></a>

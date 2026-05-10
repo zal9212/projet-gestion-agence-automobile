@@ -1,0 +1,32 @@
+# --- Teranga Auto ERP - Configuration Apache ---
+
+# Désactiver le parcours des répertoires
+Options -Indexes
+
+# Empêcher l'accès aux fichiers sensibles
+<FilesMatch "^\.|\.(bak|config|sql|log|sh|inc|php_history)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Empêcher l'accès au dossier système app/
+RewriteEngine On
+RewriteRule ^app/ - [F,L]
+
+# Forcer le HTTPS (décommenter si le certificat SSL est actif)
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Redirection vers index.php pour les URLs propres (Optionnel)
+# RewriteCond %{REQUEST_FILENAME} !-f
+# RewriteCond %{REQUEST_FILENAME} !-d
+# RewriteRule ^(.*)$ index.php?action=$1 [QSA,L]
+
+# Protection contre le détournement de clic (Clickjacking)
+Header always set X-Frame-Options "SAMEORIGIN"
+
+# Protection XSS pour les anciens navigateurs
+Header always set X-XSS-Protection "1; mode=block"
+
+# Empêcher le sniffing de type MIME
+Header always set X-Content-Type-Options "nosniff"

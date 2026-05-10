@@ -27,10 +27,21 @@
 <body>
     <div class="contract-wrapper">
         <div class="watermark">TERANGA AUTO</div>
-    <div class="text-center mt-3 mb-4 no-print">
+    <div class="text-center mt-3 mb-4 no-print d-flex justify-content-center flex-wrap gap-2">
+        <a href="index.php?action=admin_dashboard" class="btn btn-outline-dark btn-lg rounded-pill px-4 fw-bold shadow-sm">
+            <i class="fa-solid fa-arrow-left me-2"></i> Retour
+        </a>
         <button onclick="window.print()" class="btn btn-dark btn-lg rounded-pill px-5 fw-bold shadow">
             <i class="fa-solid fa-print me-2"></i> Imprimer le Contrat
         </button>
+        <?php 
+            $currentUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+            $waMessage = "Bonjour, voici votre contrat de location Teranga Auto : " . $currentUrl;
+            $waLink = "https://wa.me/?text=" . urlencode($waMessage);
+        ?>
+        <a href="<?= $waLink ?>" target="_blank" class="btn btn-success btn-lg rounded-pill px-4 fw-bold shadow-sm" style="background-color: #25D366; border-color: #25D366;">
+            <i class="fa-brands fa-whatsapp me-2"></i> Partager
+        </a>
     </div>
     
     <div class="contract-header d-flex justify-content-between align-items-center">

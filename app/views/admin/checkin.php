@@ -1,6 +1,6 @@
 <?php ob_start(); ?>
 <div class="d-flex justify-content-between align-items-center mb-5">
-    <div><h2 class="fw-bold mb-1">Comptoir Check-in / Check-out</h2><p class="text-muted">Gérez les départs et retours des véhicules en direct.</p></div>
+    <div><h2 class="fw-bold mb-1">Comptoir Départs / Retours</h2><p class="text-muted">Gérez les départs et retours des véhicules en direct.</p></div>
 </div>
 <div class="alert alert-warning border-0 rounded-4 shadow-sm p-4 d-flex align-items-center">
     <i class="fa-solid fa-tablet-screen-button fa-2x me-3"></i>
@@ -21,7 +21,7 @@
                 <td colspan="5" class="text-center py-5">
                     <i class="fa-solid fa-mug-hot fa-3x text-muted mb-3"></i>
                     <h5 class="fw-bold text-dark">Le comptoir est vide !</h5>
-                    <p class="text-muted">Il n'y a pas de véhicules à remettre (Check-out) ou à réceptionner (Check-in) pour le moment.<br>Allez dans le menu <strong>Réservations</strong> et changez le statut d'une réservation en <strong>"Validée"</strong> pour la voir apparaître ici.</p>
+                    <p class="text-muted">Il n'y a pas de véhicules à remettre (Départ) ou à réceptionner (Retour) pour le moment.<br>Allez dans le menu <strong>Réservations</strong> et changez le statut d'une réservation en <strong>"Validée"</strong> pour la voir apparaître ici.</p>
                 </td>
             </tr>
             <?php else: ?>
@@ -32,16 +32,18 @@
                 <td><?= htmlspecialchars($r['nom'].' '.$r['prenom']) ?></td>
                 <td>
                     <?php if($r['status_reservation'] == 'validee'): ?>
-                        <span class="badge bg-primary rounded-pill"><i class="fa-solid fa-arrow-right-from-bracket me-1"></i> Prêt pour Départ (Check-out)</span>
+                        <span class="badge bg-primary rounded-pill"><i class="fa-solid fa-arrow-right-from-bracket me-1"></i> Prêt pour Départ</span>
                     <?php elseif($r['status_reservation'] == 'en_cours'): ?>
-                        <span class="badge bg-success rounded-pill"><i class="fa-solid fa-arrow-right-to-bracket me-1"></i> En attente de Retour (Check-in)</span>
+                        <span class="badge bg-success rounded-pill"><i class="fa-solid fa-arrow-right-to-bracket me-1"></i> En attente de Retour</span>
                     <?php else: ?>
                         <span class="text-muted small">Aucune action</span>
                     <?php endif; ?>
                 </td>
                 <td class="pe-4 text-end">
-                    <?php if($r['status_reservation'] == 'validee' || $r['status_reservation'] == 'en_cours'): ?>
-                        <a href="index.php?action=admin_checkout_process&id=<?= $r['id'] ?>" class="btn btn-warning btn-sm rounded-pill px-4 fw-bold shadow-sm">Traiter</a>
+                    <?php if($r['status_reservation'] == 'validee'): ?>
+                        <a href="index.php?action=admin_checkout_process&id=<?= $r['id'] ?>" class="btn btn-warning btn-sm rounded-pill px-4 fw-bold shadow-sm">Traiter le Départ</a>
+                    <?php elseif($r['status_reservation'] == 'en_cours'): ?>
+                        <a href="index.php?action=admin_checkin_process&id=<?= $r['id'] ?>" class="btn btn-success btn-sm rounded-pill px-4 fw-bold shadow-sm">Traiter le Retour</a>
                     <?php endif; ?>
                 </td>
             </tr>

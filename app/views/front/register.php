@@ -14,6 +14,7 @@
                 <?php endif; ?>
 
                 <form action="index.php?action=do_register" method="POST" class="text-start">
+                    <?= csrf_field() ?>
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
                             <label class="form-label fw-bold text-muted small ms-2">Prénom</label>

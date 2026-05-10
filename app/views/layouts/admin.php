@@ -57,7 +57,7 @@
             <a href="index.php?action=admin_cars" class="sidebar-link <?= (isset($_GET['action']) && strpos($_GET['action'], 'admin_car')!==false)?'active':'' ?>"><i class="fa-solid fa-car"></i> Flotte de Véhicules</a>
             
             <p class="text-muted small fw-bold px-4 mb-2 ms-2 mt-4" style="letter-spacing: 1px;">OPÉRATIONS</p>
-            <a href="index.php?action=admin_checkin" class="sidebar-link <?= (isset($_GET['action']) && $_GET['action']=='admin_checkin')?'active':'' ?>"><i class="fa-solid fa-clipboard-check"></i> Check-in / Out</a>
+            <a href="index.php?action=admin_checkin" class="sidebar-link <?= (isset($_GET['action']) && $_GET['action']=='admin_checkin')?'active':'' ?>"><i class="fa-solid fa-clipboard-check"></i> Départs / Retours</a>
             <a href="index.php?action=admin_maintenance" class="sidebar-link <?= (isset($_GET['action']) && $_GET['action']=='admin_maintenance')?'active':'' ?>"><i class="fa-solid fa-wrench"></i> Maintenance</a>
             
             <p class="text-muted small fw-bold px-4 mb-2 ms-2 mt-4" style="letter-spacing: 1px;">FINANCE & CLIENTS</p>
@@ -91,7 +91,7 @@
             <a href="index.php?action=admin_cars" class="sidebar-link <?= (isset($_GET['action']) && strpos($_GET['action'], 'admin_car')!==false)?'active':'' ?>"><i class="fa-solid fa-car"></i> Flotte de Véhicules</a>
             
             <p class="text-muted small fw-bold px-4 mb-2 ms-2 mt-4" style="letter-spacing: 1px;">OPÉRATIONS</p>
-            <a href="index.php?action=admin_checkin" class="sidebar-link <?= (isset($_GET['action']) && $_GET['action']=='admin_checkin')?'active':'' ?>"><i class="fa-solid fa-clipboard-check"></i> Check-in / Out</a>
+            <a href="index.php?action=admin_checkin" class="sidebar-link <?= (isset($_GET['action']) && $_GET['action']=='admin_checkin')?'active':'' ?>"><i class="fa-solid fa-clipboard-check"></i> Départs / Retours</a>
             <a href="index.php?action=admin_maintenance" class="sidebar-link <?= (isset($_GET['action']) && $_GET['action']=='admin_maintenance')?'active':'' ?>"><i class="fa-solid fa-wrench"></i> Maintenance</a>
             
             <p class="text-muted small fw-bold px-4 mb-2 ms-2 mt-4" style="letter-spacing: 1px;">FINANCE & CLIENTS</p>
@@ -132,7 +132,7 @@
                                 <li class="text-center py-3 text-muted small">Aucune nouvelle notification</li>
                             <?php else: ?>
                                 <?php foreach($notifs as $n): ?>
-                                    <li><a class="dropdown-item rounded-3 mb-1 p-2 white-space-normal" href="index.php?action=notif_read&id=<?= $n['id'] ?>">
+                                    <li><a class="dropdown-item rounded-3 mb-1 p-2 text-wrap" href="index.php?action=notif_read&id=<?= $n['id'] ?>">
                                         <div class="small fw-bold"><?= htmlspecialchars($n['message']) ?></div>
                                         <div class="text-muted" style="font-size: 0.7rem;"><?= date('H:i', strtotime($n['created_at'])) ?></div>
                                     </a></li>
@@ -141,7 +141,13 @@
                         </ul>
                     </div>
 
-                    <a href="index.php?action=admin_profile"><img src="https://ui-avatars.com/api/?name=<?= urlencode($_SESSION['user_prenom']) ?>&background=1a1a1a&color=fff" class="rounded-circle shadow-sm" style="width: 45px;"></a>
+                    <a href="index.php?action=admin_profile">
+                        <?php if(!empty($_SESSION['user_photo'])): ?>
+                            <img src="<?= htmlspecialchars($_SESSION['user_photo']) ?>" class="rounded-circle shadow-sm" style="width: 45px; height: 45px; object-fit: cover; border: 2px solid var(--accent-yellow);">
+                        <?php else: ?>
+                            <img src="https://ui-avatars.com/api/?name=<?= urlencode($_SESSION['user_prenom']) ?>&background=1a1a1a&color=fff" class="rounded-circle shadow-sm" style="width: 45px;">
+                        <?php endif; ?>
+                    </a>
                 </div>
             </div>
             

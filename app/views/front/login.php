@@ -14,6 +14,7 @@
                 <?php endif; ?>
 
                 <form action="index.php?action=do_login" method="POST" class="text-start">
+                    <?= csrf_field() ?>
                     <div class="mb-3">
                         <label class="form-label fw-bold text-muted small ms-2">Adresse Email</label>
                         <input type="email" name="email" class="form-control form-control-lg bg-light border-0 rounded-pill px-4" required>

@@ -18,7 +18,7 @@ function admin_dashboard() {
     check_admin();
     $pdo = get_pdo();
     
-    // --- COHERENCE : CA MENSUEL FILTRÉ PAR MOIS ET ANNÉE ---
+    // --- STATS DE BASE ---
     $ca_mensuel = $pdo->query("SELECT SUM(prix_total) FROM reservations 
                                WHERE status_reservation IN ('validee', 'terminee', 'en_cours') 
                                AND MONTH(date_creation) = MONTH(CURRENT_DATE()) 
@@ -31,9 +31,31 @@ function admin_dashboard() {
         'attente' => $pdo->query("SELECT COUNT(*) FROM reservations WHERE status_reservation = 'en_attente'")->fetchColumn(),
     ];
     
+    // --- DONNÉES GRAPHIQUE : REVENUS DES 6 DERNIERS MOIS (FORCER 6 POINTS POUR LA COURBE) ---
+    $chart_revenue = [];
+    for ($i = 5; $i >= 0; $i--) {
+        $month_start = date('Y-m-01', strtotime("-$i months"));
+        $month_end = date('Y-m-t', strtotime("-$i months"));
+        $label = date('M', strtotime($month_start));
+        
+        // Traduction mois en FR court
+        $months_fr = ['Jan'=>'Jan', 'Feb'=>'Fév', 'Mar'=>'Mar', 'Apr'=>'Avr', 'May'=>'Mai', 'Jun'=>'Juin', 'Jul'=>'Juil', 'Aug'=>'Août', 'Sep'=>'Sep', 'Oct'=>'Oct', 'Nov'=>'Nov', 'Dec'=>'Déc'];
+        $label_fr = $months_fr[$label] ?? $label;
+
+        $val = $pdo->prepare("SELECT SUM(prix_total) FROM reservations 
+                              WHERE status_reservation IN ('validee', 'terminee', 'en_cours') 
+                              AND date_creation BETWEEN ? AND ?");
+        $val->execute([$month_start . ' 00:00:00', $month_end . ' 23:59:59']);
+        $total = $val->fetchColumn() ?: 0;
+        
+        $chart_revenue[] = ['label' => $label_fr, 'value' => (float)$total];
+    }
+
+    // --- DONNÉES GRAPHIQUE : ÉTAT DE LA FLOTTE ---
+    $fleet_status = $pdo->query("SELECT status as label, COUNT(*) as value FROM cars GROUP BY status")->fetchAll();
+    
     $recent_reservations = $pdo->query("SELECT r.*, u.nom, u.prenom, c.marque, c.modele FROM reservations r JOIN users u ON r.user_id = u.id JOIN cars c ON r.car_id = c.id ORDER BY r.id DESC LIMIT 5")->fetchAll();
 
-    // --- ALERTES MAINTENANCE : Assurances expirant dans moins de 30 jours ---
     $alerts = $pdo->query("SELECT id, immatriculation, marque, modele, date_assurance 
                            FROM cars 
                            WHERE date_assurance IS NOT NULL 
@@ -42,6 +64,8 @@ function admin_dashboard() {
 
     render_view('admin/dashboard', [
         'stats' => $stats, 
+        'chart_revenue' => $chart_revenue,
+        'fleet_status' => $fleet_status,
         'recent_reservations' => $recent_reservations,
         'alerts' => $alerts,
         'is_admin' => ($_SESSION['user_role'] === 'admin')
@@ -97,6 +121,7 @@ function admin_car_form() {
 
 function admin_car_save() {
     check_admin();
+    verify_csrf_token('POST');
     $pdo = get_pdo();
     $id = $_POST['id'] ?? null;
     
@@ -108,6 +133,16 @@ function admin_car_save() {
 
     // Image Principale
     if (isset($_FILES['image_file']) && $_FILES['image_file']['error'] == UPLOAD_ERR_OK) {
+        // Si on modifie, on supprime l'ancienne image physique
+        if ($id) {
+            $old = $pdo->prepare("SELECT image_principale FROM cars WHERE id = ?");
+            $old->execute([$id]);
+            $old_path = $old->fetchColumn();
+            if ($old_path && file_exists($old_path) && strpos($old_path, 'uploads/') !== false) {
+                unlink($old_path);
+            }
+        }
+
         $extension = pathinfo($_FILES['image_file']['name'], PATHINFO_EXTENSION);
         $fileName = 'car_' . time() . '_' . uniqid() . '.' . $extension;
         if (move_uploaded_file($_FILES['image_file']['tmp_name'], $uploadDir . $fileName)) {
@@ -117,6 +152,15 @@ function admin_car_save() {
 
     // Logo Marque
     if (isset($_FILES['brand_logo_file']) && $_FILES['brand_logo_file']['error'] == UPLOAD_ERR_OK) {
+        if ($id) {
+            $old = $pdo->prepare("SELECT brand_logo FROM cars WHERE id = ?");
+            $old->execute([$id]);
+            $old_path = $old->fetchColumn();
+            if ($old_path && file_exists($old_path) && strpos($old_path, 'uploads/') !== false) {
+                unlink($old_path);
+            }
+        }
+
         $extension = pathinfo($_FILES['brand_logo_file']['name'], PATHINFO_EXTENSION);
         $fileName = 'logo_' . time() . '_' . uniqid() . '.' . $extension;
         if (move_uploaded_file($_FILES['brand_logo_file']['tmp_name'], $uploadDir . $fileName)) {
@@ -130,16 +174,17 @@ function admin_car_save() {
     $caution = !empty($_POST['caution']) ? $_POST['caution'] : 0;
     $nb_places = !empty($_POST['nb_places']) ? $_POST['nb_places'] : 5;
     $date_assurance = !empty($_POST['date_assurance']) ? $_POST['date_assurance'] : null;
+    $date_visite_technique = !empty($_POST['date_visite_technique']) ? $_POST['date_visite_technique'] : null;
 
     $data = [
         $category_id, $_POST['immatriculation'], $_POST['marque'], $_POST['modele'],
         $_POST['type_carburant'], $_POST['boite_vitesse'], $nb_places,
-        $prix_journalier, $caution, $image_principale, $brand_logo, $date_assurance, $_POST['status']
+        $prix_journalier, $caution, $image_principale, $brand_logo, $date_assurance, $date_visite_technique, $_POST['status']
     ];
 
     try {
         if ($id && !empty($id)) {
-            $stmt = $pdo->prepare("UPDATE cars SET category_id=?, immatriculation=?, marque=?, modele=?, type_carburant=?, boite_vitesse=?, nb_places=?, prix_journalier=?, caution=?, image_principale=?, brand_logo=?, date_assurance=?, status=? WHERE id=?");
+            $stmt = $pdo->prepare("UPDATE cars SET category_id=?, immatriculation=?, marque=?, modele=?, type_carburant=?, boite_vitesse=?, nb_places=?, prix_journalier=?, caution=?, image_principale=?, brand_logo=?, date_assurance=?, date_visite_technique=?, status=? WHERE id=?");
             $data[] = $id;
             $stmt->execute($data);
             $car_id = $id;
@@ -155,15 +200,12 @@ function admin_car_save() {
                 return;
             }
 
-            $stmt = $pdo->prepare("INSERT INTO cars (category_id, immatriculation, marque, modele, type_carburant, boite_vitesse, nb_places, prix_journalier, caution, image_principale, brand_logo, date_assurance, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt = $pdo->prepare("INSERT INTO cars (category_id, immatriculation, marque, modele, type_carburant, boite_vitesse, nb_places, prix_journalier, caution, image_principale, brand_logo, date_assurance, date_visite_technique, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $stmt->execute($data);
             $car_id = $pdo->lastInsertId();
             $_SESSION['success'] = "Véhicule ajouté.";
         }
     } catch (PDOException $e) {
-        // Log de l'erreur pour le développeur
-        file_put_contents('debug_log.txt', date('[Y-m-d H:i:s] ') . "Erreur Ajout Voiture: " . $e->getMessage() . " | Data: " . json_encode($_POST) . PHP_EOL, FILE_APPEND);
-        
         $_SESSION['error'] = "Erreur lors de l'enregistrement : " . $e->getMessage();
         redirect('index.php?action=admin_car_form' . ($id ? '&id='.$id : ''));
         return;
@@ -188,18 +230,71 @@ function admin_car_save() {
     redirect('index.php?action=admin_cars');
 }
 
+function admin_car_image_delete() {
+    check_admin();
+    verify_csrf_token('GET');
+    $pdo = get_pdo();
+    $id = $_GET['id'];
+    $car_id = $_GET['car_id'];
+
+    // 1. Récupérer le chemin
+    $stmt = $pdo->prepare("SELECT image_path FROM car_images WHERE id = ?");
+    $stmt->execute([$id]);
+    $path = $stmt->fetchColumn();
+
+    // 2. Suppression physique
+    if ($path && file_exists($path)) {
+        unlink($path);
+    }
+
+    // 3. Suppression base
+    $pdo->prepare("DELETE FROM car_images WHERE id = ?")->execute([$id]);
+
+    $_SESSION['success'] = "Image supprimée de la galerie.";
+    redirect('index.php?action=admin_car_form&id=' . $car_id);
+}
+
 function admin_car_delete() {
     check_admin();
+    verify_csrf_token('GET');
     $pdo = get_pdo();
+    $id = $_GET['id'];
+
     // On vérifie s'il y a des réservations avant de supprimer
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM reservations WHERE car_id = ?");
-    $stmt->execute([$_GET['id']]);
+    $stmt->execute([$id]);
     if ($stmt->fetchColumn() > 0) {
         $_SESSION['error'] = "Impossible de supprimer : ce véhicule possède des réservations.";
     } else {
-        $stmt = $pdo->prepare("DELETE FROM cars WHERE id = ?");
-        $stmt->execute([$_GET['id']]);
-        $_SESSION['success'] = "Véhicule supprimé.";
+        // 1. Récupérer les chemins des photos pour suppression physique
+        $car = $pdo->prepare("SELECT image_principale, brand_logo FROM cars WHERE id = ?");
+        $car->execute([$id]);
+        $row = $car->fetch();
+        $main_image = $row['image_principale'];
+        $brand_logo = $row['brand_logo'];
+
+        $gallery = $pdo->prepare("SELECT image_path FROM car_images WHERE car_id = ?");
+        $gallery->execute([$id]);
+        $gallery_images = $gallery->fetchAll(PDO::FETCH_COLUMN);
+
+        // 2. Suppression physique des fichiers
+        if ($main_image && file_exists($main_image) && strpos($main_image, 'uploads/') !== false) {
+            unlink($main_image);
+        }
+        if ($brand_logo && file_exists($brand_logo) && strpos($brand_logo, 'uploads/') !== false) {
+            unlink($brand_logo);
+        }
+        foreach ($gallery_images as $img_path) {
+            if ($img_path && file_exists($img_path)) {
+                unlink($img_path);
+            }
+        }
+
+        // 3. Suppression en base (car_images sera supprimé par contrainte ON DELETE CASCADE si elle existe, sinon manuellement)
+        $pdo->prepare("DELETE FROM car_images WHERE car_id = ?")->execute([$id]);
+        $pdo->prepare("DELETE FROM cars WHERE id = ?")->execute([$id]);
+
+        $_SESSION['success'] = "Véhicule et ses photos supprimés avec succès.";
     }
     redirect('index.php?action=admin_cars');
 }
@@ -261,6 +356,7 @@ function admin_reservations_export() {
 
 function admin_res_update() {
     check_admin();
+    verify_csrf_token('POST');
     $pdo = get_pdo();
     $stmt = $pdo->prepare("UPDATE reservations SET status_reservation = ?, validated_by = ? WHERE id = ?");
     $stmt->execute([$_POST['status'], $_SESSION['user_id'], $_POST['id']]);
@@ -287,6 +383,7 @@ function admin_crm() {
 
 function admin_crm_blacklist() {
     check_admin();
+    verify_csrf_token('GET');
     $pdo = get_pdo();
     $pdo->prepare("UPDATE users SET is_blacklisted = NOT is_blacklisted WHERE id = ?")->execute([$_GET['id']]);
     redirect('index.php?action=admin_crm');
@@ -330,10 +427,34 @@ function admin_checkout_process() {
 
 function admin_save_checkout() {
     check_admin();
+    verify_csrf_token('POST');
     $pdo = get_pdo();
+    // Gestion des photos de départ
+    $photos_json = null;
+    if (!empty($_FILES['photos_depart']['name'][0])) {
+        $upload_dir = 'uploads/inspections/';
+        if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
+        
+        $photos = [];
+        foreach ($_FILES['photos_depart']['name'] as $key => $name) {
+            $tmp_name = $_FILES['photos_depart']['tmp_name'][$key];
+            if ($tmp_name && $_FILES['photos_depart']['error'][$key] === UPLOAD_ERR_OK) {
+                $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+                // Basic validation for images
+                if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
+                    $filename = 'dep_' . $_POST['id'] . '_' . time() . '_' . $key . '.' . $ext;
+                    if (move_uploaded_file($tmp_name, $upload_dir . $filename)) {
+                        $photos[] = $upload_dir . $filename;
+                    }
+                }
+            }
+        }
+        if (!empty($photos)) $photos_json = json_encode($photos);
+    }
+
     // Mise à jour de la réservation
-    $stmt = $pdo->prepare("UPDATE reservations SET kilometrage_depart = ?, niveau_carburant_depart = ?, signature_base64 = ?, status_reservation = 'en_cours', validated_by = ? WHERE id = ?");
-    $stmt->execute([$_POST['kilometrage_depart'], $_POST['niveau_carburant_depart'], $_POST['signature_base64'], $_SESSION['user_id'], $_POST['id']]);
+    $stmt = $pdo->prepare("UPDATE reservations SET kilometrage_depart = ?, niveau_carburant_depart = ?, signature_base64 = ?, photos_depart = ?, status_reservation = 'en_cours', validated_by = ? WHERE id = ?");
+    $stmt->execute([$_POST['kilometrage_depart'], $_POST['niveau_carburant_depart'], $_POST['signature_base64'], $photos_json, $_SESSION['user_id'], $_POST['id']]);
     
     // Mise à jour du statut voiture -> LOUÉE
     $res = $pdo->prepare("SELECT car_id FROM reservations WHERE id = ?");
@@ -371,14 +492,49 @@ function admin_print_contract() {
     render_view('admin/contract_print', ['reservation' => $reservation, 'car' => $car]);
 }
 
+/**
+ * Impression d'une facture professionnelle
+ */
+function admin_print_invoice() {
+    check_admin();
+    $pdo = get_pdo();
+    $id = $_GET['id'] ?? null;
+    if (!$id) redirect('index.php?action=admin_reservations');
+
+    $stmt = $pdo->prepare("SELECT 
+        r.*, 
+        u.nom, u.prenom, u.email, u.telephone, u.adresse as client_adresse,
+        c.marque, c.modele, c.immatriculation, c.id as car_id
+    FROM reservations r
+    INNER JOIN users AS u ON r.user_id = u.id 
+    INNER JOIN cars AS c ON r.car_id = c.id 
+    WHERE r.id = ?");
+    $stmt->execute([$id]);
+    $reservation = $stmt->fetch();
+
+    if (!$reservation) redirect('index.php?action=admin_reservations');
+
+    render_view('admin/invoice_print', ['reservation' => $reservation]);
+}
+
 function admin_gantt() {
     check_admin();
     $pdo = get_pdo();
+    
+    $month = isset($_GET['month']) ? (int)$_GET['month'] : (int)date('m');
+    $year = isset($_GET['year']) ? (int)$_GET['year'] : (int)date('Y');
+    
     $cars = $pdo->query("SELECT id, immatriculation, marque, modele FROM cars ORDER BY marque ASC")->fetchAll();
-    $month = date('m'); $year = date('Y');
-    $reservations = $pdo->prepare("SELECT r.*, u.nom, u.prenom FROM reservations r JOIN users u ON r.user_id = u.id WHERE (MONTH(r.date_debut) = ? OR MONTH(r.date_fin) = ?) AND YEAR(r.date_debut) = ?");
-    $reservations->execute([$month, $month, $year]);
-    render_view('admin/gantt', ['cars' => $cars, 'reservations' => $reservations->fetchAll()]);
+    
+    $reservations = $pdo->prepare("SELECT r.*, u.nom, u.prenom FROM reservations r JOIN users u ON r.user_id = u.id WHERE (MONTH(r.date_debut) = ? OR MONTH(r.date_fin) = ?) AND (YEAR(r.date_debut) = ? OR YEAR(r.date_fin) = ?)");
+    $reservations->execute([$month, $month, $year, $year]);
+    
+    render_view('admin/gantt', [
+        'cars' => $cars, 
+        'reservations' => $reservations->fetchAll(),
+        'view_month' => $month,
+        'view_year' => $year
+    ]);
 }
 
 function admin_profile() {
@@ -414,6 +570,7 @@ function admin_staff_form() {
 
 function admin_staff_save() {
     if ($_SESSION['user_role'] !== 'admin') die("Action non autorisée");
+    verify_csrf_token('POST');
     $pdo = get_pdo();
     $id = $_POST['id'] ?? null;
     $nom = $_POST['nom'];
@@ -452,6 +609,7 @@ function admin_staff_save() {
 
 function admin_staff_delete() {
     check_admin();
+    verify_csrf_token('GET');
     $pdo = get_pdo();
     if ($_GET['id'] == $_SESSION['user_id']) {
         $_SESSION['error'] = "Vous ne pouvez pas vous supprimer vous-même.";
@@ -460,4 +618,100 @@ function admin_staff_delete() {
         $_SESSION['success'] = "Membre supprimé.";
     }
     redirect('index.php?action=admin_staff');
+}
+
+/**
+ * Vue détaillée d'une réservation (Historique & Documents)
+ */
+function admin_reservation_detail() {
+    check_admin();
+    $pdo = get_pdo();
+    $id = $_GET['id'] ?? null;
+    if (!$id) redirect('index.php?action=admin_reservations');
+
+    $stmt = $pdo->prepare("SELECT 
+        r.*, 
+        u.nom, u.prenom, u.email, u.telephone, 
+        c.marque, c.modele, c.immatriculation, c.id as car_id,
+        agent.nom as agent_nom, agent.prenom as agent_prenom
+    FROM reservations r
+    INNER JOIN users AS u ON r.user_id = u.id 
+    INNER JOIN cars AS c ON r.car_id = c.id
+    LEFT JOIN users AS agent ON r.validated_by = agent.id
+    WHERE r.id = ?");
+    $stmt->execute([$id]);
+    $reservation = $stmt->fetch();
+
+    if (!$reservation) {
+        $_SESSION['error'] = "Réservation introuvable.";
+        redirect('index.php?action=admin_reservations');
+    }
+
+    render_view('admin/reservation_detail', ['reservation' => $reservation]);
+}
+
+/**
+ * Lancement du processus de retour véhicule (Check-in)
+ */
+function admin_checkin_process() {
+    check_admin();
+    $pdo = get_pdo();
+    $id = $_GET['id'] ?? null;
+    if (!$id) redirect('index.php?action=admin_reservations');
+
+    $stmt = $pdo->prepare("SELECT r.*, u.nom, u.prenom, c.marque, c.modele, c.immatriculation, c.kilometrage FROM reservations r JOIN users u ON r.user_id = u.id JOIN cars c ON r.car_id = c.id WHERE r.id = ?");
+    $stmt->execute([$id]);
+    $reservation = $stmt->fetch();
+
+    render_view('admin/checkin_process', ['reservation' => $reservation]);
+}
+
+/**
+ * Sauvegarde du retour véhicule
+ */
+function admin_save_checkin() {
+    check_admin();
+    verify_csrf_token('POST');
+    $pdo = get_pdo();
+    $id = $_POST['id'];
+    $km_retour = $_POST['kilometrage_retour'];
+    $fuel_retour = $_POST['niveau_carburant_retour'];
+    $sig_retour = $_POST['signature_retour_base64'];
+
+    // Gestion des photos de retour
+    $photos_json = null;
+    if (!empty($_FILES['photos_retour']['name'][0])) {
+        $upload_dir = 'uploads/inspections/';
+        if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
+        
+        $photos = [];
+        foreach ($_FILES['photos_retour']['name'] as $key => $name) {
+            $tmp_name = $_FILES['photos_retour']['tmp_name'][$key];
+            if ($tmp_name && $_FILES['photos_retour']['error'][$key] === UPLOAD_ERR_OK) {
+                $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+                if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
+                    $filename = 'ret_' . $_POST['id'] . '_' . time() . '_' . $key . '.' . $ext;
+                    if (move_uploaded_file($tmp_name, $upload_dir . $filename)) {
+                        $photos[] = $upload_dir . $filename;
+                    }
+                }
+            }
+        }
+        if (!empty($photos)) $photos_json = json_encode($photos);
+    }
+
+    // Mise à jour réservation avec signature et photos de retour
+    $stmt = $pdo->prepare("UPDATE reservations SET kilometrage_retour = ?, niveau_carburant_retour = ?, signature_retour_base64 = ?, photos_retour = ?, status_reservation = 'terminee' WHERE id = ?");
+    $stmt->execute([$km_retour, $fuel_retour, $sig_retour, $photos_json, $id]);
+
+    // Récupérer le car_id
+    $res = $pdo->prepare("SELECT car_id FROM reservations WHERE id = ?");
+    $res->execute([$id]);
+    $car_id = $res->fetchColumn();
+
+    // Mise à jour voiture : Status -> DISPONIBLE et Mise à jour du KILOMÉTRAGE total
+    $pdo->prepare("UPDATE cars SET status = 'disponible', kilometrage = ? WHERE id = ?")->execute([$km_retour, $car_id]);
+
+    $_SESSION['success'] = "Location terminée. Le véhicule est de nouveau disponible.";
+    redirect('index.php?action=admin_reservations');
 }

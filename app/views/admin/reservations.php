@@ -68,29 +68,69 @@
                             <?php endif; ?>
                         </td>
                         <td>
-                            <form action="index.php?action=admin_res_update" method="POST" class="d-flex align-items-center">
-                                <input type="hidden" name="id" value="<?= $r['id'] ?>">
+                            <?php if(in_array($r['status_reservation'], ['en_attente', 'validee'])): ?>
+                                <form action="index.php?action=admin_res_update" method="POST" class="d-inline">
+                                    <?= csrf_field() ?>
+                                    <input type="hidden" name="id" value="<?= $r['id'] ?>">
+                                    <?php 
+                                    $status_color = match($r['status_reservation']) {
+                                        'en_attente' => 'text-warning',
+                                        'validee'    => 'text-success',
+                                        default      => 'text-dark'
+                                    };
+                                    ?>
+                                    <select name="status" class="form-select form-select-sm rounded-pill border-0 bg-light fw-bold <?= $status_color ?>" style="width: 140px; cursor:pointer;" onchange="this.form.submit()">
+                                        <option value="en_attente" <?= $r['status_reservation']=='en_attente'?'selected':'' ?>>En attente</option>
+                                        <option value="validee"    <?= $r['status_reservation']=='validee'?'selected':'' ?>>Validée</option>
+                                        <option value="annulee"    <?= $r['status_reservation']=='annulee'?'selected':'' ?>>Annulée</option>
+                                    </select>
+                                </form>
+                            <?php else: ?>
                                 <?php 
-                                $status_color = match($r['status_reservation']) {
-                                    'en_attente' => 'text-warning',
-                                    'validee' => 'text-success',
-                                    'en_cours' => 'text-primary',
-                                    'terminee' => 'text-secondary',
-                                    'annulee' => 'text-danger',
-                                    default => 'text-dark'
+                                $badge_class = match($r['status_reservation']) {
+                                    'en_cours' => 'bg-primary text-white',
+                                    'terminee' => 'bg-secondary text-white',
+                                    'annulee'  => 'bg-danger text-white',
+                                    default    => 'bg-light text-dark'
                                 };
                                 ?>
-                                <select name="status" class="form-select form-select-sm rounded-pill border-0 bg-light fw-bold <?= $status_color ?>" style="width: 140px; cursor:pointer;" onchange="this.form.submit()">
-                                    <option value="en_attente" <?= $r['status_reservation']=='en_attente'?'selected':'' ?>>En attente</option>
-                                    <option value="validee" <?= $r['status_reservation']=='validee'?'selected':'' ?>>Validée</option>
-                                    <option value="en_cours" <?= $r['status_reservation']=='en_cours'?'selected':'' ?>>En cours</option>
-                                    <option value="terminee" <?= $r['status_reservation']=='terminee'?'selected':'' ?>>Terminée</option>
-                                    <option value="annulee" <?= $r['status_reservation']=='annulee'?'selected':'' ?>>Annulée</option>
-                                </select>
-                            </form>
+                                <span class="badge <?= $badge_class ?> rounded-pill px-3 py-2" style="width: 140px; font-size: 0.8rem;">
+                                    <?= ucfirst(str_replace('_', ' ', $r['status_reservation'])) ?>
+                                </span>
+                            <?php endif; ?>
                         </td>
                         <td class="pe-4 text-end">
-                            <a href="index.php?action=admin_print_contract&id=<?= $r['id'] ?>" class="btn btn-light btn-sm rounded-circle shadow-sm text-primary" style="width: 35px; height: 35px;" title="Imprimer le contrat"><i class="fa-solid fa-print"></i></a>
+                            <div class="d-flex justify-content-end gap-2">
+                                <!-- Bouton de Validation Rapide -->
+                                <?php if($r['status_reservation'] == 'en_attente'): ?>
+                                    <form action="index.php?action=admin_res_update" method="POST" class="m-0 p-0">
+                                        <?= csrf_field() ?>
+                                        <input type="hidden" name="id" value="<?= $r['id'] ?>">
+                                        <input type="hidden" name="status" value="validee">
+                                        <button type="submit" class="btn btn-success btn-sm rounded-pill px-3 shadow-sm fw-bold" title="Confirmer la réservation">
+                                            <i class="fa-solid fa-check me-1"></i> Valider
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
+
+                                <!-- Actions Opérationnelles -->
+                                <?php if($r['status_reservation'] == 'validee'): ?>
+                                    <a href="index.php?action=admin_checkout_process&id=<?= $r['id'] ?>" class="btn btn-warning btn-sm rounded-pill px-3 shadow-sm fw-bold text-dark" title="Démarrer le Départ">
+                                        <i class="fa-solid fa-key me-1"></i> Départ
+                                    </a>
+                                <?php endif; ?>
+
+                                <?php if($r['status_reservation'] == 'en_cours'): ?>
+                                    <a href="index.php?action=admin_checkin_process&id=<?= $r['id'] ?>" class="btn btn-success btn-sm rounded-pill px-3 shadow-sm fw-bold" title="Effectuer le Retour">
+                                        <i class="fa-solid fa-car-on me-1"></i> Retour
+                                    </a>
+                                <?php endif; ?>
+
+                                <!-- Consultation -->
+                                <a href="index.php?action=admin_reservation_detail&id=<?= $r['id'] ?>" class="btn btn-light btn-sm rounded-circle shadow-sm" style="width: 35px; height: 35px;" title="Détails complets">
+                                    <i class="fa-solid fa-eye text-primary"></i>
+                                </a>
+                            </div>
                         </td>
                     </tr>
                     <?php endforeach; ?>

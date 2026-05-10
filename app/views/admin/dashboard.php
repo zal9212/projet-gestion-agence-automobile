@@ -7,11 +7,13 @@
     <button class="btn btn-dark rounded-pill px-4"><i class="fa-solid fa-download me-2"></i> Exporter</button>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
 <!-- Statistiques -->
-<div class="row g-4 mb-5">
+<div class="row g-4 mb-4">
     <?php if($is_admin): ?>
     <div class="col-md-3">
-        <div class="card bg-white h-100">
+        <div class="card bg-white h-100 border-0 shadow-sm rounded-4">
             <div class="card-body p-4 d-flex align-items-center">
                 <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center me-4" style="width:60px; height:60px; font-size: 1.5rem;">
                     <i class="fa-solid fa-euro-sign"></i>
@@ -25,7 +27,7 @@
     </div>
     <?php endif; ?>
     <div class="col-md-3">
-        <div class="card bg-white h-100">
+        <div class="card bg-white h-100 border-0 shadow-sm rounded-4">
             <div class="card-body p-4 d-flex align-items-center">
                 <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-4" style="width:60px; height:60px; font-size: 1.5rem;">
                     <i class="fa-solid fa-car"></i>
@@ -38,7 +40,7 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card bg-white h-100">
+        <div class="card bg-white h-100 border-0 shadow-sm rounded-4">
             <div class="card-body p-4 d-flex align-items-center">
                 <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-flex align-items-center justify-content-center me-4" style="width:60px; height:60px; font-size: 1.5rem;">
                     <i class="fa-regular fa-clock"></i>
@@ -51,7 +53,7 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card bg-dark text-white h-100" style="background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);">
+        <div class="card bg-dark text-white h-100 border-0 shadow-sm rounded-4" style="background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);">
             <div class="card-body p-4 d-flex align-items-center">
                 <div class="bg-white bg-opacity-10 text-white rounded-circle d-flex align-items-center justify-content-center me-4" style="width:60px; height:60px; font-size: 1.5rem;">
                     <i class="fa-solid fa-calendar-check"></i>
@@ -64,6 +66,97 @@
         </div>
     </div>
 </div>
+
+<!-- Graphiques Interactifs -->
+<div class="row g-4 mb-5">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold mb-0">Évolution des Revenus (6 mois)</h5>
+                <span class="badge bg-light text-dark rounded-pill px-3">FCFA</span>
+            </div>
+            <div id="revenueChart"></div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+            <h5 class="fw-bold mb-4">État de la Flotte</h5>
+            <div id="fleetChart"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Données Revenue (Toujours 6 points fournis par le contrôleur)
+        const revenueLabels = <?= json_encode(array_column($chart_revenue, 'label')) ?>;
+        const revenueValues = <?= json_encode(array_column($chart_revenue, 'value')) ?>;
+
+        // Données Flotte
+        const fleetLabels = <?= json_encode(array_column($fleet_status, 'label')) ?>;
+        const fleetValues = <?= json_encode(array_map('intval', array_column($fleet_status, 'value'))) ?>;
+
+        // Configuration Chart Revenus
+        var revenueOptions = {
+            series: [{ name: 'Revenus', data: revenueValues }],
+            chart: { 
+                height: 350, 
+                type: 'area', 
+                toolbar: { show: true }, 
+                animations: { enabled: true, easing: 'easeinout', speed: 800 },
+                zoom: { enabled: true } 
+            },
+            colors: ['#f4c053'],
+            dataLabels: { enabled: false },
+            stroke: { curve: 'smooth', width: 4 },
+            markers: { size: 5, hover: { size: 8 } },
+            xaxis: { categories: revenueLabels },
+            yaxis: { 
+                min: 0,
+                labels: { formatter: function(val) { return Math.round(val).toLocaleString() + ' F'; } } 
+            },
+            fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.6, opacityTo: 0.1 } },
+            tooltip: { 
+                enabled: true,
+                shared: true,
+                intersect: false,
+                y: { formatter: function(val) { return val.toLocaleString() + ' FCFA'; } },
+                theme: 'dark'
+            }
+        };
+        
+        new ApexCharts(document.querySelector("#revenueChart"), revenueOptions).render();
+
+        // Configuration Chart Flotte
+        var fleetOptions = {
+            series: fleetValues,
+            labels: fleetLabels.map(l => l.charAt(0).toUpperCase() + l.slice(1)),
+            chart: { 
+                type: 'donut', 
+                height: 350,
+                animations: { enabled: true, speed: 1000 }
+            },
+            colors: ['#1a1a1a', '#f4c053', '#2ecc71', '#e74c3c'],
+            legend: { position: 'bottom' },
+            dataLabels: { enabled: true },
+            plotOptions: { 
+                pie: { 
+                    expandOnClick: true,
+                    donut: { 
+                        size: '75%',
+                        labels: {
+                            show: true,
+                            total: { show: true, label: 'Véhicules', formatter: () => '<?= $stats['total_cars'] ?>' }
+                        }
+                    } 
+                } 
+            },
+            tooltip: { theme: 'dark' }
+        };
+        
+        new ApexCharts(document.querySelector("#fleetChart"), fleetOptions).render();
+    });
+</script>
 
 <!-- Alertes Maintenance -->
 <?php if(!empty($alerts)): ?>

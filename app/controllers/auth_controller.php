@@ -9,6 +9,7 @@ function auth_login() {
 }
 
 function auth_do_login() {
+    verify_csrf_token('POST');
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
     
@@ -26,6 +27,7 @@ function auth_do_login() {
     $_SESSION['user_nom'] = $user['nom'];
     $_SESSION['user_prenom'] = $user['prenom'];
     $_SESSION['user_role'] = $user['role'];
+    $_SESSION['user_photo'] = $user['photo_profil'];
 
     redirect($user['role'] === 'admin' ? 'index.php?action=admin_dashboard' : 'index.php');
 }
@@ -36,6 +38,7 @@ function auth_register() {
 }
 
 function auth_do_register() {
+    verify_csrf_token('POST');
     $pdo = get_pdo();
     $email = trim($_POST['email'] ?? '');
     
@@ -65,6 +68,7 @@ function auth_do_register() {
 
 function auth_profile_save() {
     if (!isset($_SESSION['user_id'])) redirect('index.php?action=login');
+    verify_csrf_token('POST');
     $pdo = get_pdo();
     $id = $_SESSION['user_id'];
     
@@ -73,6 +77,26 @@ function auth_profile_save() {
     $email = $_POST['email'];
     $telephone = $_POST['telephone'];
     
+    // Gestion de la photo de profil
+    if (isset($_FILES['photo_profil']) && $_FILES['photo_profil']['error'] == UPLOAD_ERR_OK) {
+        $uploadDir = 'uploads/profiles/';
+        if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+        
+        $extension = pathinfo($_FILES['photo_profil']['name'], PATHINFO_EXTENSION);
+        $fileName = 'profile_' . $id . '_' . time() . '.' . $extension;
+        if (move_uploaded_file($_FILES['photo_profil']['tmp_name'], $uploadDir . $fileName)) {
+            // Supprimer l'ancienne photo physique
+            if (!empty($_SESSION['user_photo']) && file_exists($_SESSION['user_photo'])) {
+                unlink($_SESSION['user_photo']);
+            }
+            
+            $photoPath = $uploadDir . $fileName;
+            $stmt = $pdo->prepare("UPDATE users SET photo_profil = ? WHERE id = ?");
+            $stmt->execute([$photoPath, $id]);
+            $_SESSION['user_photo'] = $photoPath;
+        }
+    }
+
     // Mise à jour de base
     $stmt = $pdo->prepare("UPDATE users SET nom = ?, prenom = ?, email = ?, telephone = ? WHERE id = ?");
     $stmt->execute([$nom, $prenom, $email, $telephone, $id]);
@@ -83,10 +107,11 @@ function auth_profile_save() {
         $stmt->execute([password_hash($_POST['password'], PASSWORD_BCRYPT), $id]);
     }
     
-    $_SESSION['user_prenom'] = $prenom; // Mettre à jour la session
+    $_SESSION['user_nom'] = $nom;
+    $_SESSION['user_prenom'] = $prenom;
     $_SESSION['success'] = "Profil mis à jour avec succès.";
     
-    redirect($_SESSION['user_role'] === 'admin' ? 'index.php?action=admin_profile' : 'index.php?action=profile');
+    redirect(in_array($_SESSION['user_role'], ['admin', 'employee']) ? 'index.php?action=admin_profile' : 'index.php?action=profile');
 }
 
 function auth_notif_read() {

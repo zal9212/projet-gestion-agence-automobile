@@ -1,0 +1,20 @@
+# robots.txt pour Teranga Auto ERP
+User-agent: *
+
+# Autoriser l'indexation du site public
+Allow: /index.php
+Allow: /uploads/cars/
+Allow: /assets/
+
+# Interdire l'accès à l'administration et aux dossiers système
+Disallow: /app/
+Disallow: /admin/
+Disallow: /index.php?action=admin_*
+Disallow: /index.php?action=login
+Disallow: /index.php?action=register
+Disallow: /index.php?action=profile
+Disallow: /debug_log.txt
+Disallow: /rapport_*.md
+
+# Sitemap
+Sitemap: https://votre-domaine.com/sitemap.xml

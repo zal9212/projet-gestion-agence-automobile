@@ -6,18 +6,35 @@
     </div>
 </div>
 
+<?php if(isset($_SESSION['success'])): ?>
+    <div class="alert alert-success rounded-4 border-0 mb-4"><?= $_SESSION['success']; unset($_SESSION['success']); ?></div>
+<?php endif; ?>
+<?php if(isset($_SESSION['error'])): ?>
+    <div class="alert alert-danger rounded-4 border-0 mb-4"><?= $_SESSION['error']; unset($_SESSION['error']); ?></div>
+<?php endif; ?>
+
 <div class="row">
     <div class="col-lg-8">
         <div class="card border-0 shadow-sm rounded-4 p-5">
             <div class="d-flex align-items-center mb-5">
-                <img src="https://ui-avatars.com/api/?name=<?= urlencode($user['prenom']) ?>&background=1a1a1a&color=fff&size=128" class="rounded-circle shadow-sm me-4" style="width: 80px;">
+                <?php if(!empty($user['photo_profil'])): ?>
+                    <img src="<?= htmlspecialchars($user['photo_profil']) ?>" class="rounded-circle shadow-sm me-4" style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #f4c053;">
+                <?php else: ?>
+                    <img src="https://ui-avatars.com/api/?name=<?= urlencode($user['prenom']) ?>&background=1a1a1a&color=fff&size=128" class="rounded-circle shadow-sm me-4" style="width: 80px;">
+                <?php endif; ?>
                 <div>
                     <h4 class="fw-bold mb-0"><?= htmlspecialchars($user['prenom'] . ' ' . $user['nom']) ?></h4>
                     <span class="badge bg-dark text-warning rounded-pill mt-1">Administrateur Teranga Auto</span>
                 </div>
             </div>
 
-            <form action="index.php?action=profile_save" method="POST">
+            <form action="index.php?action=profile_save" method="POST" enctype="multipart/form-data">
+                <?= csrf_field() ?>
+                
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-muted small ms-2">Changer ma photo de profil</label>
+                    <input type="file" name="photo_profil" class="form-control form-control-lg bg-light border-0 rounded-pill px-4" accept="image/*">
+                </div>
                 <div class="row g-4 mb-5">
                     <div class="col-md-6">
                         <label class="form-label fw-bold text-muted small ms-2">Prénom</label>

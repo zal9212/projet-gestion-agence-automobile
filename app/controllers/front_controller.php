@@ -31,25 +31,11 @@ function front_search() {
     $query = $_GET['q'] ?? '';
 
     $sql = "SELECT c.*, cat.nom as categorie_nom,
-                   (SELECT COUNT(*) FROM favorites f WHERE f.car_id = c.id AND f.user_id = :user_id) as is_fav
-            FROM cars c 
-            LEFT JOIN categories cat ON c.category_id = cat.id
-            WHERE 1=1";
-    
-    $params = ['user_id' => $user_id];
-
-    if (!empty($category_ids)) {
-        $placeholders = implode(',', array_fill(0, count($category_ids), '?'));
-        $sql .= " AND c.category_id IN ($placeholders)";
-        // Merging params is tricky with mixed named/positional, using all positional for safety if needed
-    }
-
-    // Rewrite to use all positional for simplicity with dynamic IN clause
-    $sql = "SELECT c.*, cat.nom as categorie_nom,
                    (SELECT COUNT(*) FROM favorites f WHERE f.car_id = c.id AND f.user_id = ?) as is_fav
             FROM cars c 
             LEFT JOIN categories cat ON c.category_id = cat.id
             WHERE 1=1";
+    
     $params = [$user_id];
 
     if (!empty($category_ids)) {

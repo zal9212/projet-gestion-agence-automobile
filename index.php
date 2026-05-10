@@ -39,6 +39,7 @@ switch ($action) {
     case 'admin_car_form':       admin_car_form(); break;
     case 'admin_car_save':       admin_car_save(); break;
     case 'admin_car_delete':     admin_car_delete(); break;
+    case 'admin_car_image_delete': admin_car_image_delete(); break;
     case 'admin_reservations':   admin_reservations(); break;
     case 'admin_reservations_export': admin_reservations_export(); break;
     case 'admin_res_update':     admin_res_update(); break;
@@ -53,7 +54,11 @@ switch ($action) {
     case 'admin_checkin':        admin_checkin(); break;
     case 'admin_checkout_process': admin_checkout_process(); break;
     case 'admin_save_checkout':  admin_save_checkout(); break;
+    case 'admin_save_checkin':   admin_save_checkin(); break;
     case 'admin_print_contract': admin_print_contract(); break;
+    case 'admin_print_invoice':  admin_print_invoice(); break;
+    case 'admin_reservation_detail': admin_reservation_detail(); break;
+    case 'admin_checkin_process': admin_checkin_process(); break;
     case 'admin_gantt':          admin_gantt(); break;
 
     // ── NOTIFICATIONS ──

@@ -44,7 +44,7 @@
                     </div>
                     <div class="d-flex gap-2">
                         <a href="index.php?action=admin_car_form&id=<?= $car['id'] ?>" class="btn btn-light rounded-circle shadow-sm text-primary" style="width: 38px; height: 38px; display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-pen"></i></a>
-                        <a href="index.php?action=admin_car_delete&id=<?= $car['id'] ?>" class="btn btn-light rounded-circle shadow-sm text-danger" style="width: 38px; height: 38px; display:flex; align-items:center; justify-content:center;" onclick="return confirm('Supprimer ce véhicule ?');"><i class="fa-solid fa-trash"></i></a>
+                        <a href="index.php?action=admin_car_delete&id=<?= $car['id'] ?>&csrf_token=<?= generate_csrf_token() ?>" class="btn btn-light rounded-circle shadow-sm text-danger" style="width: 38px; height: 38px; display:flex; align-items:center; justify-content:center;" onclick="return confirm('Supprimer ce véhicule ?');"><i class="fa-solid fa-trash"></i></a>
                     </div>
                 </div>
             </div>

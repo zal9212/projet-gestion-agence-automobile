@@ -104,13 +104,13 @@
                 </div>
             </div>
             
-            <div class="card border-0 shadow-lg" style="border-radius: 24px; max-width: 1000px; position: absolute; bottom: -40px; left: 50%; transform: translateX(-50%); z-index: 10; width: 90%;">
+            <div class="card border-0 shadow-lg" style="border-radius: 24px; max-width: 1000px; position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%); z-index: 10; width: 90%;">
                 <div class="card-body p-4">
-                    <form action="index.php" method="GET" class="row g-3 align-items-center">
+                    <form action="index.php" method="GET" class="row g-3 align-items-end">
                         <input type="hidden" name="action" value="search">
                         <div class="col-md-3">
                             <label class="form-label fw-bold text-muted small mb-1 ms-2">Où & Quoi ?</label>
-                            <div class="input-group bg-light rounded-pill px-3">
+                            <div class="input-group bg-light rounded-pill px-3" style="height: 45px;">
                                 <span class="input-group-text bg-transparent border-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
                                 <input type="text" name="q" class="form-control bg-transparent border-0 ps-0" placeholder="Marque, modèle..." style="box-shadow:none;">
                             </div>
@@ -134,7 +134,7 @@
         </div>
     </div>
     
-    <div style="height: 100px;"></div>
+    <div style="height: 80px;"></div>
 
     <div class="container-fluid px-5 mb-5">
         <h5 class="fw-bold mb-4">Toutes les Marques</h5>

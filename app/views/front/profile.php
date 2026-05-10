@@ -4,12 +4,20 @@
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5">
                 <div class="text-center mb-5">
-                    <img src="https://ui-avatars.com/api/?name=<?= urlencode($user['prenom']) ?>&background=random&size=128" class="rounded-circle shadow-sm mb-3" style="width: 100px;">
+                    <?php if(!empty($user['photo_profil'])): ?>
+                        <img src="<?= htmlspecialchars($user['photo_profil']) ?>" class="rounded-circle shadow-sm mb-3" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #f4c053;">
+                    <?php else: ?>
+                        <img src="https://ui-avatars.com/api/?name=<?= urlencode($user['prenom']) ?>&background=random&size=128" class="rounded-circle shadow-sm mb-3" style="width: 100px;">
+                    <?php endif; ?>
                     <h3 class="fw-bold mb-1"><?= htmlspecialchars($user['prenom'] . ' ' . $user['nom']) ?></h3>
                     <p class="text-muted small">Membre depuis <?= date('M Y', strtotime($user['date_inscription'])) ?></p>
                 </div>
 
-                <form action="index.php?action=profile_save" method="POST">
+                <form action="index.php?action=profile_save" method="POST" enctype="multipart/form-data">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-muted small ms-2">Changer ma photo de profil</label>
+                        <input type="file" name="photo_profil" class="form-control form-control-lg bg-light border-0 rounded-pill px-4" accept="image/*">
+                    </div>
                     <div class="row g-4 mb-5">
                         <div class="col-md-6">
                             <label class="form-label fw-bold text-muted small ms-2">Prénom</label>

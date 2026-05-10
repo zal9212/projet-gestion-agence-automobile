@@ -20,6 +20,7 @@ $isEdit = isset($car) && $car;
     <div class="col-lg-8">
         <div class="card border-0 shadow-sm rounded-4 p-5">
             <form action="index.php?action=admin_car_save" method="POST" enctype="multipart/form-data">
+                <?= csrf_field() ?>
                 <?php if($isEdit): ?>
                     <input type="hidden" name="id" value="<?= $car['id'] ?>">
                 <?php endif; ?>
@@ -104,7 +105,7 @@ $isEdit = isset($car) && $car;
                     </div>
                 </div>
 
-                <h5 class="fw-bold mb-4">Tarification & Photo</h5>
+                <h5 class="fw-bold mb-4">Tarification & Photos</h5>
                 <div class="row g-4 mb-5">
                     <div class="col-md-6">
                         <label class="form-label fw-bold text-muted small ms-2">Prix Journalier (FCFA)</label>
@@ -114,11 +115,43 @@ $isEdit = isset($car) && $car;
                         <label class="form-label fw-bold text-muted small ms-2">Caution / Garantie (FCFA)</label>
                         <input type="number" name="caution" class="form-control form-control-lg bg-light border-0 rounded-pill px-4" value="<?= $isEdit ? htmlspecialchars($car['caution']) : '0' ?>" placeholder="Ex: 500000">
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold text-muted small ms-2">Photo du Véhicule (Fichier)</label>
-                        <input type="file" name="image_file" class="form-control form-control-lg bg-light border-0 rounded-pill px-4 mb-2" accept="image/*">
-                        <small class="text-muted ms-2">Ou URL actuelle :</small>
-                        <input type="text" name="image_principale" class="form-control bg-light border-0 rounded-pill px-4" value="<?= $isEdit ? htmlspecialchars($car['image_principale']) : '' ?>" placeholder="URL de l'image (optionnel)">
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold text-muted small ms-2">Photo Principale du Véhicule</label>
+                        <!-- Zone de prévisualisation -->
+                        <div id="main-preview-zone" class="mb-3 <?= ($isEdit && $car['image_principale']) ? '' : 'd-none' ?>" style="position: relative; width: 100%; height: 200px; border-radius: 16px; overflow: hidden; background: #f8f8f8;">
+                            <img id="main-preview-img" src="<?= $isEdit ? htmlspecialchars($car['image_principale'] ?? '') : '' ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                            <button type="button" onclick="resetMainPhoto()" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 1rem; cursor: pointer;">&times;</button>
+                        </div>
+                        <!-- Inputs cachés -->
+                        <input type="file" name="image_file" id="main-photo-file" class="d-none" accept="image/*" onchange="previewMainPhoto(this)">
+                        <input type="file" name="image_file" id="main-photo-camera" class="d-none" accept="image/*" capture="environment" onchange="previewMainPhoto(this)">
+                        <input type="text" name="image_principale" id="image_url" class="form-control bg-light border-0 rounded-pill px-4 mb-3" value="<?= $isEdit ? htmlspecialchars($car['image_principale'] ?? '') : '' ?>" placeholder="URL de l'image (optionnel)">
+                        <!-- Boutons d'action -->
+                        <div class="d-flex gap-2">
+                            <button type="button" onclick="document.getElementById('main-photo-file').click()" class="btn btn-dark rounded-pill px-4 flex-fill">
+                                <i class="fa-solid fa-folder-open me-2"></i>Choisir depuis la galerie
+                            </button>
+                            <button type="button" onclick="document.getElementById('main-photo-camera').click()" class="btn btn-outline-dark rounded-pill px-4 flex-fill">
+                                <i class="fa-solid fa-camera me-2"></i>Prendre une photo
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold text-muted small ms-2">Galerie de Photos (Plusieurs)</label>
+                        <!-- Prévisualisation galerie -->
+                        <div id="gallery-preview" class="d-flex flex-wrap gap-2 mb-3"></div>
+                        <!-- Inputs galerie -->
+                        <input type="file" name="gallery_files[]" id="gallery-file" class="d-none" accept="image/*" multiple onchange="previewGallery(this)">
+                        <input type="file" name="gallery_files[]" id="gallery-camera" class="d-none" accept="image/*" capture="environment" onchange="previewGallery(this)">
+                        <div class="d-flex gap-2">
+                            <button type="button" onclick="document.getElementById('gallery-file').click()" class="btn btn-secondary rounded-pill px-4 flex-fill">
+                                <i class="fa-solid fa-images me-2"></i>Ajouter depuis la galerie
+                            </button>
+                            <button type="button" onclick="document.getElementById('gallery-camera').click()" class="btn btn-outline-secondary rounded-pill px-4 flex-fill">
+                                <i class="fa-solid fa-camera me-2"></i>Prendre une photo
+                            </button>
+                        </div>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-bold text-muted small ms-2">Date Prochaine Assurance</label>
@@ -127,6 +160,10 @@ $isEdit = isset($car) && $car;
                     <div class="col-md-6">
                         <label class="form-label fw-bold text-muted small ms-2">Galerie Photos (Plusieurs fichiers)</label>
                         <input type="file" name="gallery_files[]" class="form-control form-control-lg bg-light border-0 rounded-pill px-4" accept="image/*" multiple>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-muted small ms-2">Date Prochaine Visite Technique</label>
+                        <input type="date" name="date_visite_technique" class="form-control form-control-lg bg-light border-0 rounded-pill px-4" value="<?= $isEdit ? htmlspecialchars($car['date_visite_technique'] ?? '') : '' ?>">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-bold text-muted small ms-2">Statut Actuel</label>
@@ -143,8 +180,14 @@ $isEdit = isset($car) && $car;
                 <div class="row g-3 mb-5">
                     <?php foreach($gallery as $img): ?>
                     <div class="col-md-3">
-                        <div class="position-relative">
+                        <div class="position-relative group">
                             <img src="<?= htmlspecialchars($img['image_path']) ?>" class="img-fluid rounded-3 border" style="height: 120px; width: 100%; object-fit: cover;">
+                            <a href="index.php?action=admin_car_image_delete&id=<?= $img['id'] ?>&car_id=<?= $car['id'] ?>&csrf_token=<?= generate_csrf_token() ?>" 
+                               class="btn btn-danger btn-sm rounded-circle position-absolute top-0 end-0 m-2 shadow-sm"
+                               onclick="return confirm('Supprimer cette photo définitivement ?');"
+                               title="Supprimer">
+                                <i class="fa-solid fa-trash"></i>
+                            </a>
                         </div>
                     </div>
                     <?php endforeach; ?>
@@ -159,4 +202,56 @@ $isEdit = isset($car) && $car;
         </div>
     </div>
 </div>
+
+<script>
+// --- PHOTO PRINCIPALE ---
+function previewMainPhoto(input) {
+    if (!input.files || !input.files[0]) return;
+    const file = input.files[0];
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        document.getElementById('main-preview-img').src = e.target.result;
+        document.getElementById('main-preview-zone').classList.remove('d-none');
+        // Clear URL field since we have a file
+        document.getElementById('image_url').value = '';
+    };
+    reader.readAsDataURL(file);
+}
+
+function resetMainPhoto() {
+    document.getElementById('main-preview-zone').classList.add('d-none');
+    document.getElementById('main-preview-img').src = '';
+    document.getElementById('main-photo-file').value = '';
+    document.getElementById('main-photo-camera').value = '';
+    document.getElementById('image_url').value = '';
+}
+
+// Prévisualiser aussi depuis le champ URL
+document.getElementById('image_url').addEventListener('input', function() {
+    const url = this.value.trim();
+    if (url) {
+        document.getElementById('main-preview-img').src = url;
+        document.getElementById('main-preview-zone').classList.remove('d-none');
+    } else {
+        document.getElementById('main-preview-zone').classList.add('d-none');
+    }
+});
+
+// --- GALERIE ---
+function previewGallery(input) {
+    if (!input.files) return;
+    const container = document.getElementById('gallery-preview');
+    Array.from(input.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const div = document.createElement('div');
+            div.style.cssText = 'width:80px;height:80px;border-radius:10px;overflow:hidden;border:2px solid #eee;';
+            div.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">`;
+            container.appendChild(div);
+        };
+        reader.readAsDataURL(file);
+    });
+}
+</script>
+
 <?php $content = ob_get_clean(); require 'app/views/layouts/admin.php'; ?>

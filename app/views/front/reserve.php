@@ -51,32 +51,60 @@
                 <div class="card border-0 shadow-sm p-4 rounded-4 mb-4">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h5 class="fw-bold mb-0"><span class="badge bg-warning text-dark rounded-circle me-2" style="width: 25px; height: 25px; display: inline-flex; align-items: center; justify-content: center;">1</span> Période de Location</h5>
-                        <?php if (!empty($bookings)): ?>
-                            <button type="button" class="btn btn-light btn-sm rounded-pill px-3" data-bs-toggle="collapse" data-bs-target="#bookedDates">Voir indisponibilités</button>
-                        <?php endif; ?>
                     </div>
 
-                    <?php if (!empty($bookings)): ?>
-                    <div class="collapse mb-4" id="bookedDates">
-                        <div class="p-3 bg-light rounded-4">
-                            <h6 class="small fw-bold mb-2"><i class="fa-solid fa-calendar-xmark text-danger me-2"></i> Déjà réservé aux dates suivantes :</h6>
-                            <ul class="list-unstyled mb-0 small row g-1">
-                                <?php foreach($bookings as $b): ?>
-                                    <li class="col-md-6"><span class="badge bg-white text-dark border fw-medium"><?= date('d/m/Y', strtotime($b['date_debut'])) ?> au <?= date('d/m/Y', strtotime($b['date_fin'])) ?></span></li>
-                                <?php endforeach; ?>
-                            </ul>
+                    <!-- Calendrier Interactif -->
+                    <div class="calendar-container mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold mb-0 text-muted small" id="calendarMonthName">Chargement...</h6>
+                            <div class="d-flex gap-1">
+                                <button type="button" class="btn btn-light btn-sm rounded-circle" onclick="changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                                <button type="button" class="btn btn-light btn-sm rounded-circle" onclick="changeMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+                        <div class="calendar-grid">
+                            <div class="calendar-day-header">Lun</div>
+                            <div class="calendar-day-header">Mar</div>
+                            <div class="calendar-day-header">Mer</div>
+                            <div class="calendar-day-header">Jeu</div>
+                            <div class="calendar-day-header">Ven</div>
+                            <div class="calendar-day-header">Sam</div>
+                            <div class="calendar-day-header">Dim</div>
+                        </div>
+                        <div id="calendarDays" class="calendar-grid">
+                            <!-- Les jours seront générés par JS -->
+                        </div>
+                        
+                        <div class="d-flex gap-4 mt-3 small justify-content-center">
+                            <div class="d-flex align-items-center"><span class="dot bg-danger me-2"></span> Indisponible</div>
+                            <div class="d-flex align-items-center"><span class="dot bg-warning me-2"></span> Sélectionné</div>
+                            <div class="d-flex align-items-center"><span class="dot bg-light border me-2"></span> Libre</div>
                         </div>
                     </div>
-                    <?php endif; ?>
+
+                    <style>
+                        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+                        .calendar-day-header { text-align: center; font-size: 0.75rem; font-weight: bold; color: #aaa; padding: 5px 0; }
+                        .calendar-day { 
+                            aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; 
+                            border-radius: 12px; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;
+                            position: relative;
+                        }
+                        .calendar-day:hover:not(.reserved) { background: #f0f0f0; }
+                        .calendar-day.reserved { background: #fee2e2; color: #ef4444; cursor: not-allowed; font-weight: bold; }
+                        .calendar-day.selected { background: var(--accent-yellow) !important; color: #000; font-weight: bold; box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3); }
+                        .calendar-day.today { border: 2px solid #eee; }
+                        .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+                    </style>
 
                     <div class="row g-4">
                         <div class="col-md-6">
                             <label class="form-label fw-bold text-muted small">Date de départ</label>
-                            <input type="date" name="date_debut" class="form-control form-control-lg bg-light border-0 rounded-4" value="<?= $_GET['date_debut'] ?? '' ?>" required min="<?= date('Y-m-d') ?>">
+                            <input type="date" id="input_date_debut" name="date_debut" class="form-control form-control-lg bg-light border-0 rounded-4" value="<?= $_GET['date_debut'] ?? '' ?>" required readonly>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold text-muted small">Date de retour</label>
-                            <input type="date" name="date_fin" class="form-control form-control-lg bg-light border-0 rounded-4" value="<?= $_GET['date_fin'] ?? '' ?>" required min="<?= date('Y-m-d') ?>">
+                            <input type="date" id="input_date_fin" name="date_fin" class="form-control form-control-lg bg-light border-0 rounded-4" value="<?= $_GET['date_fin'] ?? '' ?>" required readonly>
                         </div>
                     </div>
                 </div>
@@ -127,13 +155,93 @@
 </div>
 
 <script>
-document.querySelector('form').addEventListener('submit', function(e) {
-    const debut = new Date(document.querySelector('input[name="date_debut"]').value);
-    const fin = new Date(document.querySelector('input[name="date_fin"]').value);
+const bookedPeriods = <?= json_encode($bookings) ?>;
+let currentMonth = new Date();
+let selection = { start: null, end: null };
+
+// Initialiser les dates si présentes dans l'URL
+if (document.getElementById('input_date_debut').value) selection.start = new Date(document.getElementById('input_date_debut').value);
+if (document.getElementById('input_date_fin').value) selection.end = new Date(document.getElementById('input_date_fin').value);
+
+function renderCalendar() {
+    const year = currentMonth.getFullYear();
+    const month = currentMonth.getMonth();
+    const monthName = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(currentMonth);
+    document.getElementById('calendarMonthName').innerText = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const startOffset = (firstDay === 0 ? 6 : firstDay - 1); // Ajuster pour commencer par Lundi
+
+    let html = '';
+    for (let i = 0; i < startOffset; i++) html += '<div></div>';
+
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const dateObj = new Date(year, month, day);
+        const isReserved = bookedPeriods.some(b => {
+            const start = new Date(b.date_debut);
+            const end = new Date(b.date_fin);
+            return dateObj >= start && dateObj <= end;
+        });
+
+        let classes = 'calendar-day';
+        if (isReserved) classes += ' reserved';
+        if (dateObj.toDateString() === new Date().toDateString()) classes += ' today';
+        if (selection.start && dateObj.toDateString() === selection.start.toDateString()) classes += ' selected';
+        if (selection.end && dateObj.toDateString() === selection.end.toDateString()) classes += ' selected';
+        if (selection.start && selection.end && dateObj > selection.start && dateObj < selection.end) classes += ' selected';
+
+        html += `<div class="${classes}" onclick="selectDate('${dateStr}', ${isReserved})">${day}</div>`;
+    }
+    document.getElementById('calendarDays').innerHTML = html;
+}
+
+function selectDate(dateStr, isReserved) {
+    if (isReserved) return;
+    const date = new Date(dateStr);
     
-    if (fin < debut) {
+    if (!selection.start || (selection.start && selection.end)) {
+        selection.start = date;
+        selection.end = null;
+    } else if (date < selection.start) {
+        selection.start = date;
+    } else {
+        // Vérifier s'il y a une réservation entre start et la nouvelle date
+        const conflict = bookedPeriods.some(b => {
+            const bStart = new Date(b.date_debut);
+            const bEnd = new Date(b.date_fin);
+            return (bStart > selection.start && bStart < date);
+        });
+        
+        if (conflict) {
+            alert("Il y a une réservation sur cette période !");
+            selection.start = date;
+        } else {
+            selection.end = date;
+        }
+    }
+
+    updateInputs();
+    renderCalendar();
+}
+
+function updateInputs() {
+    if (selection.start) document.getElementById('input_date_debut').value = selection.start.toISOString().split('T')[0];
+    if (selection.end) document.getElementById('input_date_fin').value = selection.end.toISOString().split('T')[0];
+}
+
+function changeMonth(dir) {
+    currentMonth.setMonth(currentMonth.getMonth() + dir);
+    renderCalendar();
+}
+
+renderCalendar();
+
+document.querySelector('form').addEventListener('submit', function(e) {
+    if (!selection.start || !selection.end) {
         e.preventDefault();
-        alert("La date de retour ne peut pas être avant la date de départ !");
+        alert("Veuillez sélectionner une période complète sur le calendrier.");
     }
 });
 </script>

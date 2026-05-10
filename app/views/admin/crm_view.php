@@ -5,7 +5,7 @@
         <h2 class="fw-bold mb-1">Dossier Client : <?= htmlspecialchars($client['nom'].' '.$client['prenom']) ?></h2>
     </div>
     <div>
-        <a href="index.php?action=admin_crm_blacklist&id=<?= $client['id'] ?>" class="btn btn-<?= $client['is_blacklisted'] ? 'success' : 'danger' ?> rounded-pill px-4" onclick="return confirm('Modifier le statut de ce client ?');">
+        <a href="index.php?action=admin_crm_blacklist&id=<?= $client['id'] ?>&csrf_token=<?= generate_csrf_token() ?>" class="btn btn-<?= $client['is_blacklisted'] ? 'success' : 'danger' ?> rounded-pill px-4" onclick="return confirm('Modifier le statut de ce client ?');">
             <i class="fa-solid <?= $client['is_blacklisted'] ? 'fa-check' : 'fa-ban' ?> me-2"></i>
             <?= $client['is_blacklisted'] ? 'Réhabiliter le client' : 'Mettre sur Liste Noire' ?>
         </a>

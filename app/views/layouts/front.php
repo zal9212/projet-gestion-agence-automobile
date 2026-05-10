@@ -22,8 +22,8 @@
         .desktop-nav { display: none; padding: 25px 30px; background: white; box-shadow: 0 4px 20px rgba(0,0,0,0.02); position: sticky; top: 0; z-index: 1000; }
         .desktop-nav .nav-links a { color: var(--dark-color); text-decoration: none; font-weight: 500; margin-left: 30px; transition: 0.2s; font-size: 1.05rem; }
         .desktop-nav .nav-links a:hover { color: var(--accent-yellow); }
-        .bottom-nav { position: fixed; bottom: 20px; left: 20px; right: 20px; background: white; border-radius: 30px; display: flex; justify-content: space-around; align-items: center; padding: 15px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.08); z-index: 1000; }
-        .bottom-nav a { color: #b0b0b0; font-size: 1.3rem; padding: 10px 20px; border-radius: 20px; text-decoration: none; transition: all 0.3s ease; }
+        .bottom-nav { position: fixed; bottom: 15px; left: 15px; right: 15px; background: white; border-radius: 30px; display: flex; justify-content: space-around; align-items: center; padding: 12px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.08); z-index: 1000; }
+        .bottom-nav a { color: #b0b0b0; font-size: 1.15rem; padding: 8px 14px; border-radius: 20px; text-decoration: none; transition: all 0.3s ease; }
         .bottom-nav a.active { background: var(--dark-color); color: white; }
         .search-bar { background: white; border-radius: 25px; padding: 5px 5px 5px 20px; display: flex; align-items: center; box-shadow: 0 8px 20px rgba(0,0,0,0.03); margin-bottom: 30px; }
         .search-bar input { border: none; background: transparent; box-shadow: none; }
@@ -70,19 +70,29 @@
                                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.5rem;"><?= $notif_count ?></span>
                             <?php endif; ?>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg p-3 rounded-4" style="width: 300px;">
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg p-3 rounded-4 bg-white" style="width: 320px;">
+                            <li class="px-2 mb-2 border-bottom pb-2"><h6 class="fw-bold mb-0">Notifications</h6></li>
                             <?php $notifs = get_unread_notifications($_SESSION['user_id']); ?>
                             <?php if(empty($notifs)): ?>
-                                <li class="text-center py-2 text-muted small">Aucune alerte</li>
+                                <li class="text-center py-4 text-muted small">Aucune nouvelle alerte</li>
                             <?php else: ?>
                                 <?php foreach($notifs as $n): ?>
-                                    <li><a class="dropdown-item rounded-3 mb-1 p-2" href="index.php?action=notif_read&id=<?= $n['id'] ?>"><small><?= htmlspecialchars($n['message']) ?></small></a></li>
+                                    <li><a class="dropdown-item rounded-3 mb-1 p-2 text-wrap" href="index.php?action=notif_read&id=<?= $n['id'] ?>">
+                                        <div class="small fw-bold text-dark"><?= htmlspecialchars($n['message']) ?></div>
+                                        <div class="text-muted" style="font-size: 0.7rem;"><?= date('d M, H:i', strtotime($n['created_at'])) ?></div>
+                                    </a></li>
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </ul>
                     </div>
 
-                    <a href="index.php?action=profile" class="ms-4"><img src="https://ui-avatars.com/api/?name=<?= urlencode($_SESSION['user_prenom']) ?>&background=random" style="width: 40px; border-radius: 50%;"></a>
+                    <a href="index.php?action=profile" class="ms-4">
+                        <?php if(!empty($_SESSION['user_photo'])): ?>
+                            <img src="<?= htmlspecialchars($_SESSION['user_photo']) ?>" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-yellow);">
+                        <?php else: ?>
+                            <img src="https://ui-avatars.com/api/?name=<?= urlencode($_SESSION['user_prenom']) ?>&background=random" style="width: 40px; border-radius: 50%;">
+                        <?php endif; ?>
+                    </a>
                 <?php else: ?>
                     <a href="index.php?action=login" class="btn btn-dark rounded-pill px-4 ms-4 text-white">Connexion</a>
                 <?php endif; ?>
@@ -92,7 +102,17 @@
 
     <!-- Header Mobile -->
     <div class="mobile-topbar d-md-none">
-        <a href="index.php?action=profile" class="icon-btn"><i class="fa-solid fa-user-gear"></i></a>
+        <?php if(isset($_SESSION['user_id'])): ?>
+            <a href="index.php?action=profile" class="icon-btn" title="Mon Compte">
+                <?php if(!empty($_SESSION['user_photo'])): ?>
+                    <img src="<?= htmlspecialchars($_SESSION['user_photo']) ?>" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid var(--dark-color);">
+                <?php else: ?>
+                    <img src="https://ui-avatars.com/api/?name=<?= urlencode($_SESSION['user_prenom'] ?? 'U') ?>&background=1a1a1a&color=fff" style="width: 32px; height: 32px; border-radius: 50%;">
+                <?php endif; ?>
+            </a>
+        <?php else: ?>
+            <a href="index.php?action=login" class="icon-btn" title="Connexion"><i class="fa-regular fa-user"></i></a>
+        <?php endif; ?>
         <a href="index.php"><img src="logo.png" alt="Teranga Auto Logo" style="height: 45px;"></a>
         <div class="dropdown">
             <a href="#" class="icon-btn position-relative" data-bs-toggle="dropdown">
@@ -104,16 +124,20 @@
                     <?php endif; ?>
                 <?php endif; ?>
             </a>
-            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg p-3 rounded-4" style="width: 280px;">
+            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg p-3 rounded-4 bg-white" style="width: 300px;">
+                <li class="px-2 mb-2 border-bottom pb-2"><h6 class="fw-bold mb-0">Notifications</h6></li>
                 <?php if(!isset($_SESSION['user_id'])): ?>
-                    <li class="text-center py-2 text-muted small">Connectez-vous pour voir vos alertes</li>
+                    <li class="text-center py-4 text-muted small">Connectez-vous pour voir vos alertes</li>
                 <?php else: ?>
                     <?php $notifs = get_unread_notifications($_SESSION['user_id']); ?>
                     <?php if(empty($notifs)): ?>
-                        <li class="text-center py-2 text-muted small">Pas d'alertes</li>
+                        <li class="text-center py-4 text-muted small">Aucune nouvelle alerte</li>
                     <?php else: ?>
                         <?php foreach($notifs as $n): ?>
-                            <li><a class="dropdown-item rounded-3 mb-1 p-2" href="index.php?action=notif_read&id=<?= $n['id'] ?>"><small><?= htmlspecialchars($n['message']) ?></small></a></li>
+                            <li><a class="dropdown-item rounded-3 mb-1 p-2 text-wrap" href="index.php?action=notif_read&id=<?= $n['id'] ?>">
+                                <div class="small fw-bold text-dark"><?= htmlspecialchars($n['message']) ?></div>
+                                <div class="text-muted" style="font-size: 0.7rem;"><?= date('d M, H:i', strtotime($n['created_at'])) ?></div>
+                            </a></li>
                         <?php endforeach; ?>
                     <?php endif; ?>
                 <?php endif; ?>
@@ -126,12 +150,22 @@
         <?= $content ?>
     </main>
 
-    <!-- Navigation Bottom (Mobile) -->
     <div class="bottom-nav d-md-none">
-        <a href="index.php" class="<?= (!isset($_GET['action']) || $_GET['action'] == 'home') ? 'active' : '' ?>"><i class="fa-solid fa-house"></i></a>
-        <a href="index.php?action=search" class="<?= (isset($_GET['action']) && $_GET['action'] == 'search') ? 'active' : '' ?>"><i class="fa-solid fa-magnifying-glass"></i></a>
-        <a href="index.php?action=favorites" class="<?= (isset($_GET['action']) && $_GET['action'] == 'favorites') ? 'active' : '' ?>"><i class="fa-regular fa-heart"></i></a>
-        <a href="<?= isset($_SESSION['user_id']) ? 'index.php?action=logout' : 'index.php?action=login' ?>"><i class="fa-regular fa-user"></i></a>
+        <a href="index.php" class="<?= (!isset($_GET['action']) || $_GET['action'] == 'home') ? 'active' : '' ?>">
+            <i class="fa-solid fa-house"></i>
+        </a>
+        <a href="index.php?action=search" class="<?= (isset($_GET['action']) && $_GET['action'] == 'search') ? 'active' : '' ?>">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </a>
+        <a href="<?= isset($_SESSION['user_id']) ? 'index.php?action=history' : 'index.php?action=login' ?>" class="<?= (isset($_GET['action']) && $_GET['action'] == 'history') ? 'active' : '' ?>" title="Mes Réservations">
+            <i class="fa-regular fa-calendar-check"></i>
+        </a>
+        <a href="index.php?action=favorites" class="<?= (isset($_GET['action']) && $_GET['action'] == 'favorites') ? 'active' : '' ?>">
+            <i class="fa-regular fa-heart"></i>
+        </a>
+        <a href="<?= isset($_SESSION['user_id']) ? 'index.php?action=profile' : 'index.php?action=login' ?>" class="<?= (isset($_GET['action']) && in_array($_GET['action'], ['profile'])) ? 'active' : '' ?>">
+            <i class="fa-regular fa-user"></i>
+        </a>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
