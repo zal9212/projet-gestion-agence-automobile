@@ -18,13 +18,13 @@
         </button>
     </form>
 
-    <div class="yellow-banner">
+    <div class="yellow-banner" style="background: linear-gradient(to right, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.1) 100%), url('3d-car-with-minimal-background.jpg') center/cover no-repeat; color: white;">
         <div style="position: relative; z-index: 2;">
-            <h3 class="fs-4">Nouveautés</h3>
-            <p>Véhicules Premium</p>
-            <a href="index.php?action=search" class="btn-dark-pill">Explorer</a>
+            <h3 class="fs-4" style="color:white;">Nouveautés</h3>
+            <p style="color: rgba(255,255,255,0.8);">Véhicules Premium</p>
+            <a href="index.php?action=search" class="btn-dark-pill" style="background: #f4c053; color: #000;">Explorer</a>
         </div>
-        <img src="https://pngimg.com/uploads/suv/suv_PNG31.png" alt="SUV">
+        <img src="3d-car-with-minimal-background.jpg" alt="SUV" style="opacity: 0; position: absolute;">
     </div>
 
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -71,10 +71,12 @@
         <div class="col-6">
             <a href="index.php?action=reserve&id=<?= $car['id'] ?>" class="car-card text-decoration-none">
                 <div class="fav-btn"><i class="fa-regular fa-heart"></i></div>
-                <img src="<?= htmlspecialchars($car['image_principale']) ?>" alt="<?= htmlspecialchars($car['modele']) ?>" style="height:80px;">
+                <div style="height: 100px; overflow: hidden; border-radius: 12px; margin-bottom: 8px;">
+                    <img src="<?= htmlspecialchars($car['image_principale']) ?>" alt="<?= htmlspecialchars($car['modele']) ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
                 <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.9rem;"><?= htmlspecialchars($car['marque'] . ' ' . $car['modele']) ?></h6>
                 <p class="text-muted mb-0 mt-1" style="font-size: 0.75rem;">
-                    <?= number_format($car['prix_journalier'], 0, ',', ' ') ?> € <span style="font-size: 0.65rem;">/jour</span>
+                    <?= number_format($car['prix_journalier'], 0, ',', ' ') ?> FCFA <span style="font-size: 0.65rem;">/jour</span>
                 </p>
             </a>
         </div>
@@ -85,7 +87,7 @@
 <!-- ================= DESKTOP VIEW ================= -->
 <div class="d-none d-md-block">
     <div class="container-fluid px-5 mt-4">
-        <div class="desktop-hero position-relative overflow-hidden" style="border-radius: 30px; background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 100%), url('https://images.unsplash.com/photo-1503376712341-ea43105ea122?auto=format&fit=crop&q=80&w=1920') center/cover; padding: 120px 80px; color: white;">
+        <div class="desktop-hero position-relative overflow-hidden" style="border-radius: 30px; background: linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 60%, rgba(0,0,0,0.05) 100%), url('3d-car-with-minimal-background.jpg') center/cover no-repeat; padding: 120px 80px; color: white;">
             <div class="row">
                 <div class="col-lg-7">
                     <span class="badge bg-warning text-dark mb-3 px-3 py-2 rounded-pill fw-bold">+100 Véhicules Premium</span>
@@ -163,8 +165,10 @@
                     <?php foreach ($cars as $car): ?>
                     <div class="col-md-6 col-xl-4">
                         <a href="index.php?action=reserve&id=<?= $car['id'] ?>" class="car-card h-100 d-flex flex-column">
+                            <div class="bg-light position-relative" style="height: 180px; overflow: hidden;">
+                                <img src="<?= htmlspecialchars($car['image_principale']) ?>" alt="<?= htmlspecialchars($car['modele']) ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
                             <div class="fav-btn"><i class="fa-regular fa-heart"></i></div>
-                            <img src="<?= htmlspecialchars($car['image_principale']) ?>" alt="<?= htmlspecialchars($car['modele']) ?>" style="height: 180px;">
                             <div class="mt-auto">
                                 <span class="badge bg-light text-dark mb-2 px-3 py-2 rounded-pill"><?= htmlspecialchars($car['categorie_nom'] ?? 'Auto') ?></span>
                                 <h5 class="fw-bold mb-1 text-dark fs-5"><?= htmlspecialchars($car['marque'] . ' ' . $car['modele']) ?></h5>
@@ -172,7 +176,7 @@
                                 <div class="d-flex justify-content-between align-items-center border-top pt-3">
                                     <div>
                                         <span class="text-muted small d-block" style="line-height: 1;">Tarif journalier</span>
-                                        <h5 class="text-dark fw-bold mb-0 mt-1"><?= number_format($car['prix_journalier'], 0, ',', ' ') ?> €</h5>
+                                        <h5 class="text-dark fw-bold mb-0 mt-1"><?= number_format($car['prix_journalier'], 0, ',', ' ') ?> FCFA</h5>
                                     </div>
                                     <span class="btn btn-dark rounded-pill px-4 py-2 fw-bold">Louer</span>
                                 </div>

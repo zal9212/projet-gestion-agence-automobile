@@ -21,8 +21,8 @@
                 <?php endif; ?>
             </div>
             
-            <div class="bg-light p-4 d-flex justify-content-center align-items-center" style="height: 180px;">
-                <img src="<?= htmlspecialchars($car['image_principale']) ?>" alt="" style="max-height: 120px; max-width: 100%; object-fit: contain;">
+            <div class="bg-light d-flex justify-content-center align-items-center" style="height: 180px; width: 100%; overflow: hidden;">
+                <img src="<?= htmlspecialchars($car['image_principale']) ?>" alt="" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
             
             <div class="card-body p-4">
@@ -40,7 +40,7 @@
                 <div class="d-flex justify-content-between align-items-end border-top pt-3">
                     <div>
                         <span class="text-muted small d-block" style="line-height:1;">Tarif journalier</span>
-                        <h5 class="text-success fw-bold mb-0 mt-1"><?= $car['prix_journalier'] ?> €</h5>
+                        <h5 class="text-success fw-bold mb-0 mt-1"><?= number_format($car['prix_journalier'], 0, ',', ' ') ?> FCFA</h5>
                     </div>
                     <div class="d-flex gap-2">
                         <a href="index.php?action=admin_car_form&id=<?= $car['id'] ?>" class="btn btn-light rounded-circle shadow-sm text-primary" style="width: 38px; height: 38px; display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-pen"></i></a>

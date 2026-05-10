@@ -23,7 +23,7 @@
     <div class="contract-header d-flex justify-content-between align-items-center">
         <div>
             <h2 class="fw-bold mb-0">AutoRent Agency</h2>
-            <p class="mb-0 text-muted">123 Avenue des Affaires, Centre Ville<br>contact@autorent.com | +33 1 23 45 67 89</p>
+            <p class="mb-0 text-muted">15 Avenue Cheikh Anta Diop, Plateau<br>contact@autorent.sn | +221 33 800 00 00</p>
         </div>
         <div class="text-end">
             <h3 class="mb-1">CONTRAT DE LOCATION</h3>
@@ -61,8 +61,8 @@
 
     <div class="section-title">RÉSUMÉ FINANCIER</div>
     <table class="table table-bordered">
-        <tr><th>Montant Total de la Location</th><td class="text-end fw-bold"><?= number_format($reservation['prix_total'], 2, ',', ' ') ?> €</td></tr>
-        <tr><th>Dépôt de Garantie (Autorisé)</th><td class="text-end"><?= number_format($car['caution'], 2, ',', ' ') ?> €</td></tr>
+        <tr><th>Montant Total de la Location</th><td class="text-end fw-bold"><?= number_format($reservation['prix_total'], 0, ',', ' ') ?> FCFA</td></tr>
+        <tr><th>Dépôt de Garantie (Autorisé)</th><td class="text-end"><?= number_format($car['caution'], 0, ',', ' ') ?> FCFA</td></tr>
     </table>
 
     <div class="section-title">CONDITIONS ET SIGNATURES</div>

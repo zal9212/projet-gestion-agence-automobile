@@ -17,7 +17,7 @@
                 </div>
                 <div>
                     <p class="text-muted small fw-bold mb-1">C.A du mois</p>
-                    <h3 class="fw-bold mb-0"><?= number_format($stats['ca_mensuel'], 0, ',', ' ') ?> €</h3>
+                    <h3 class="fw-bold mb-0"><?= number_format($stats['ca_mensuel'], 0, ',', ' ') ?> FCFA</h3>
                 </div>
             </div>
         </div>
@@ -92,7 +92,7 @@
                             </div>
                         </td>
                         <td class="text-muted"><i class="fa-regular fa-calendar me-2"></i><?= date('d/m/Y', strtotime($r['date_debut'])) ?> &rarr; <?= date('d/m/Y', strtotime($r['date_fin'])) ?></td>
-                        <td class="fw-bold text-success"><?= number_format($r['prix_total'], 0, ',', ' ') ?> €</td>
+                        <td class="fw-bold text-success"><?= number_format($r['prix_total'], 0, ',', ' ') ?> FCFA</td>
                         <td>
                             <?php 
                             $badge = match($r['status_reservation']) {

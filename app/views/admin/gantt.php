@@ -105,5 +105,6 @@ $month_name = date('F Y');
     <div class="d-flex align-items-center"><span style="width:15px; height:15px; background:#f4c053; border-radius:3px; margin-right:8px;"></span> <small>En attente</small></div>
     <div class="d-flex align-items-center"><span style="width:15px; height:15px; background:#2ecc71; border-radius:3px; margin-right:8px;"></span> <small>Option Bloquée / Validée</small></div>
     <div class="d-flex align-items-center"><span style="width:15px; height:15px; background:#3498db; border-radius:3px; margin-right:8px;"></span> <small>En cours (Check-out fait)</small></div>
+    <div class="d-flex align-items-center"><span style="width:15px; height:15px; background:#95a5a6; border-radius:3px; margin-right:8px;"></span> <small>Annulée</small></div>
 </div>
 <?php $content = ob_get_clean(); require 'app/views/layouts/admin.php'; ?>

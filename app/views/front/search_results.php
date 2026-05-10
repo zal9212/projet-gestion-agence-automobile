@@ -22,16 +22,18 @@
             <?php foreach ($cars as $car): ?>
             <div class="col-md-6 col-lg-4 col-xl-3">
                 <a href="index.php?action=reserve&id=<?= $car['id'] ?><?= !empty($_GET['date_debut']) ? '&date_debut='.urlencode($_GET['date_debut']) : '' ?><?= !empty($_GET['date_fin']) ? '&date_fin='.urlencode($_GET['date_fin']) : '' ?>" class="car-card text-decoration-none h-100 d-flex flex-column">
-                    <div class="fav-btn"><i class="fa-regular fa-heart"></i></div>
-                    <img src="<?= htmlspecialchars($car['image_principale']) ?>" alt="<?= htmlspecialchars($car['modele']) ?>" style="height: 160px; object-fit: contain;">
-                    <div class="mt-auto">
+                    <!-- Image plein cadre -->
+                    <div style="height: 180px; overflow: hidden; border-radius: 15px; flex-shrink: 0;">
+                        <img src="<?= htmlspecialchars($car['image_principale']) ?>" alt="<?= htmlspecialchars($car['modele']) ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <div class="mt-auto p-3">
                         <span class="badge bg-light text-dark mb-2 px-3 py-2 rounded-pill border"><?= htmlspecialchars($car['categorie_nom'] ?? 'Auto') ?></span>
                         <h5 class="fw-bold mb-1 text-dark fs-5"><?= htmlspecialchars($car['marque'] . ' ' . $car['modele']) ?></h5>
                         <p class="text-muted small mb-3"><i class="fa-solid fa-gas-pump me-1"></i> <?= htmlspecialchars($car['type_carburant']) ?> &bull; <i class="fa-solid fa-gears me-1"></i> <?= htmlspecialchars($car['boite_vitesse']) ?></p>
                         <div class="d-flex justify-content-between align-items-center border-top pt-3">
                             <div>
                                 <span class="text-muted small d-block" style="line-height: 1;">Tarif journalier</span>
-                                <h5 class="text-success fw-bold mb-0 mt-1"><?= number_format($car['prix_journalier'], 0, ',', ' ') ?> €</h5>
+                                <h5 class="text-success fw-bold mb-0 mt-1"><?= number_format($car['prix_journalier'], 0, ',', ' ') ?> FCFA</h5>
                             </div>
                             <span class="btn btn-dark rounded-pill px-4 py-2 fw-bold">Louer</span>
                         </div>

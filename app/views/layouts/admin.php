@@ -29,6 +29,7 @@
         
         /* Responsive Tables */
         .table-responsive { border-radius: 15px; }
+        .table-responsive table th, .table-responsive table td { white-space: nowrap; }
         .gantt-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     </style>
 </head>
@@ -104,8 +105,34 @@
                     <input type="text" class="border-0 bg-transparent w-100" placeholder="Rechercher un VIN, client, réservation..." style="outline:none;">
                 </div>
                 <div class="d-flex align-items-center gap-3">
-                    <div class="bg-white rounded-circle d-flex align-items-center justify-content-center shadow-sm border" style="width: 45px; height: 45px;"><i class="fa-regular fa-bell"></i></div>
-                    <img src="https://ui-avatars.com/api/?name=Admin&background=1a1a1a&color=fff" class="rounded-circle shadow-sm" style="width: 45px;">
+                    <!-- Notifications Dropdown -->
+                    <div class="dropdown">
+                        <div class="bg-white rounded-circle d-flex align-items-center justify-content-center shadow-sm border position-relative" style="width: 45px; height: 45px; cursor:pointer;" data-bs-toggle="dropdown">
+                            <i class="fa-regular fa-bell"></i>
+                            <?php $notif_count = count_unread_notifications($_SESSION['user_id']); ?>
+                            <?php if($notif_count > 0): ?>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
+                                    <?= $notif_count ?>
+                                </span>
+                            <?php endif; ?>
+                        </div>
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg p-3 rounded-4" style="width: 300px;">
+                            <li class="px-2 mb-2"><h6 class="fw-bold mb-0">Notifications</h6></li>
+                            <?php $notifs = get_unread_notifications($_SESSION['user_id']); ?>
+                            <?php if(empty($notifs)): ?>
+                                <li class="text-center py-3 text-muted small">Aucune nouvelle notification</li>
+                            <?php else: ?>
+                                <?php foreach($notifs as $n): ?>
+                                    <li><a class="dropdown-item rounded-3 mb-1 p-2 white-space-normal" href="index.php?action=notif_read&id=<?= $n['id'] ?>">
+                                        <div class="small fw-bold"><?= htmlspecialchars($n['message']) ?></div>
+                                        <div class="text-muted" style="font-size: 0.7rem;"><?= date('H:i', strtotime($n['created_at'])) ?></div>
+                                    </a></li>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </ul>
+                    </div>
+
+                    <a href="index.php?action=admin_profile"><img src="https://ui-avatars.com/api/?name=<?= urlencode($_SESSION['user_prenom']) ?>&background=1a1a1a&color=fff" class="rounded-circle shadow-sm" style="width: 45px;"></a>
                 </div>
             </div>
             

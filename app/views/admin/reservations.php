@@ -42,7 +42,7 @@
                             <div class="small fw-medium text-dark"><?= date('d/m/Y', strtotime($r['date_debut'])) ?></div>
                             <div class="text-muted small">&rarr; <?= date('d/m/Y', strtotime($r['date_fin'])) ?></div>
                         </td>
-                        <td class="fw-bold text-success"><?= number_format($r['prix_total'], 0, ',', ' ') ?> €</td>
+                        <td class="fw-bold text-success"><?= number_format($r['prix_total'], 0, ',', ' ') ?> FCFA</td>
                         <td>
                             <?php if(isset($r['avec_chauffeur']) && $r['avec_chauffeur']): ?>
                                 <span class="badge bg-dark rounded-pill"><i class="fa-solid fa-user-tie me-1"></i> Oui</span>

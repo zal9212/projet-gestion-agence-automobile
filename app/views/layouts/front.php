@@ -58,7 +58,29 @@
                     <?php if($_SESSION['user_role'] === 'admin'): ?>
                         <a href="index.php?action=admin_dashboard" style="color: var(--accent-yellow);">Administration</a>
                     <?php endif; ?>
-                    <a href="index.php?action=logout" class="ms-4"><img src="https://ui-avatars.com/api/?name=<?= urlencode($_SESSION['user_prenom']) ?>&background=random" style="width: 40px; border-radius: 50%;"></a>
+                    
+                    <!-- Notifications Desktop -->
+                    <div class="dropdown d-inline-block ms-4">
+                        <a href="#" class="text-dark text-decoration-none position-relative" data-bs-toggle="dropdown">
+                            <i class="fa-regular fa-bell fs-5"></i>
+                            <?php $notif_count = count_unread_notifications($_SESSION['user_id']); ?>
+                            <?php if($notif_count > 0): ?>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.5rem;"><?= $notif_count ?></span>
+                            <?php endif; ?>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg p-3 rounded-4" style="width: 300px;">
+                            <?php $notifs = get_unread_notifications($_SESSION['user_id']); ?>
+                            <?php if(empty($notifs)): ?>
+                                <li class="text-center py-2 text-muted small">Aucune alerte</li>
+                            <?php else: ?>
+                                <?php foreach($notifs as $n): ?>
+                                    <li><a class="dropdown-item rounded-3 mb-1 p-2" href="index.php?action=notif_read&id=<?= $n['id'] ?>"><small><?= htmlspecialchars($n['message']) ?></small></a></li>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </ul>
+                    </div>
+
+                    <a href="index.php?action=profile" class="ms-4"><img src="https://ui-avatars.com/api/?name=<?= urlencode($_SESSION['user_prenom']) ?>&background=random" style="width: 40px; border-radius: 50%;"></a>
                 <?php else: ?>
                     <a href="index.php?action=login" class="btn btn-dark rounded-pill px-4 ms-4 text-white">Connexion</a>
                 <?php endif; ?>
@@ -68,12 +90,33 @@
 
     <!-- Header Mobile -->
     <div class="mobile-topbar d-md-none">
-        <a href="#" class="icon-btn"><i class="fa-solid fa-border-all"></i></a>
-        <h5 class="fw-bold mb-0">Accueil</h5>
-        <a href="#" class="icon-btn position-relative">
-            <i class="fa-regular fa-bell"></i>
-            <span class="position-absolute top-25 start-75 translate-middle p-1 bg-danger border border-light rounded-circle" style="top: 10px; left: 30px;"></span>
-        </a>
+        <a href="index.php?action=profile" class="icon-btn"><i class="fa-solid fa-user-gear"></i></a>
+        <h5 class="fw-bold mb-0">AutoRent</h5>
+        <div class="dropdown">
+            <a href="#" class="icon-btn position-relative" data-bs-toggle="dropdown">
+                <i class="fa-regular fa-bell"></i>
+                <?php if(isset($_SESSION['user_id'])): ?>
+                    <?php $notif_count = count_unread_notifications($_SESSION['user_id']); ?>
+                    <?php if($notif_count > 0): ?>
+                        <span class="position-absolute top-25 start-75 translate-middle p-1 bg-danger border border-light rounded-circle" style="top: 10px; left: 30px;"></span>
+                    <?php endif; ?>
+                <?php endif; ?>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg p-3 rounded-4" style="width: 280px;">
+                <?php if(!isset($_SESSION['user_id'])): ?>
+                    <li class="text-center py-2 text-muted small">Connectez-vous pour voir vos alertes</li>
+                <?php else: ?>
+                    <?php $notifs = get_unread_notifications($_SESSION['user_id']); ?>
+                    <?php if(empty($notifs)): ?>
+                        <li class="text-center py-2 text-muted small">Pas d'alertes</li>
+                    <?php else: ?>
+                        <?php foreach($notifs as $n): ?>
+                            <li><a class="dropdown-item rounded-3 mb-1 p-2" href="index.php?action=notif_read&id=<?= $n['id'] ?>"><small><?= htmlspecialchars($n['message']) ?></small></a></li>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                <?php endif; ?>
+            </ul>
+        </div>
     </div>
 
     <!-- Main Content -->

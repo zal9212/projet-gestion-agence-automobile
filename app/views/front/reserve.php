@@ -3,8 +3,8 @@
     <div class="row g-5">
         <div class="col-lg-4 order-lg-2">
             <div class="card border-0 shadow-lg rounded-4 overflow-hidden position-sticky" style="top: 100px;">
-                <div class="p-4 text-center bg-light">
-                    <img src="<?= htmlspecialchars($car['image_principale']) ?>" class="img-fluid" style="height: 200px; object-fit: contain;">
+                <div style="height: 200px; overflow:hidden; flex-shrink:0;">
+                    <img src="<?= htmlspecialchars($car['image_principale']) ?>" style="width:100%; height:100%; object-fit:cover;">
                 </div>
                 <div class="card-body p-4 bg-white">
                     <span class="badge bg-dark text-white mb-2 px-3 py-2 rounded-pill"><?= htmlspecialchars($car['categorie_nom']) ?></span>
@@ -12,11 +12,11 @@
                     
                     <div class="d-flex justify-content-between mb-3 border-bottom pb-3">
                         <span class="text-muted">Tarif Journalier</span>
-                        <span class="fw-bold text-success fs-5"><?= number_format($car['prix_journalier'], 0, ',', ' ') ?> €</span>
+                        <span class="fw-bold text-success fs-5"><?= number_format($car['prix_journalier'], 0, ',', ' ') ?> FCFA</span>
                     </div>
                     <div class="d-flex justify-content-between mb-3 border-bottom pb-3">
                         <span class="text-muted">Dépôt de Garantie (Caution) <i class="fa-solid fa-circle-info small"></i></span>
-                        <span class="fw-bold"><?= number_format($car['caution'], 0, ',', ' ') ?> €</span>
+                        <span class="fw-bold"><?= number_format($car['caution'], 0, ',', ' ') ?> FCFA</span>
                     </div>
                     
                     <div class="bg-light p-3 rounded-4 mt-4">
@@ -62,19 +62,19 @@
                     <div class="row g-4">
                         <div class="col-md-6">
                             <label class="form-label fw-bold text-muted small">Lieu de départ</label>
-                            <select name="lieu_prise_id" class="form-select form-select-lg bg-light border-0 rounded-4" required>
+                            <select name="lieu_prise_id" class="form-select form-select-lg bg-light border-0 rounded-4">
                                 <option value="">Choisir un lieu...</option>
                                 <?php foreach($locations as $loc): ?>
-                                    <option value="<?= $loc['id'] ?>"><?= htmlspecialchars($loc['nom']) ?> (+<?= $loc['frais_supplementaire'] ?>€)</option>
+                                    <option value="<?= $loc['id'] ?>"><?= htmlspecialchars($loc['nom']) ?> <?= $loc['frais_supplementaire'] > 0 ? '(+'.number_format($loc['frais_supplementaire'],0,',',' ').' FCFA)' : '(Inclus)' ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold text-muted small">Lieu de restitution</label>
-                            <select name="lieu_retour_id" class="form-select form-select-lg bg-light border-0 rounded-4" required>
+                            <select name="lieu_retour_id" class="form-select form-select-lg bg-light border-0 rounded-4">
                                 <option value="">Choisir un lieu...</option>
                                 <?php foreach($locations as $loc): ?>
-                                    <option value="<?= $loc['id'] ?>"><?= htmlspecialchars($loc['nom']) ?> (+<?= $loc['frais_supplementaire'] ?>€)</option>
+                                    <option value="<?= $loc['id'] ?>"><?= htmlspecialchars($loc['nom']) ?> <?= $loc['frais_supplementaire'] > 0 ? '(+'.number_format($loc['frais_supplementaire'],0,',',' ').' FCFA)' : '(Inclus)' ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -91,7 +91,7 @@
                                 <strong class="d-block">Chauffeur Privé</strong>
                                 <small class="text-muted">Détendez-vous et laissez un professionnel vous conduire.</small>
                             </div>
-                            <span class="badge bg-dark rounded-pill px-3 py-2">+150 € / jour</span>
+                            <span class="badge bg-dark rounded-pill px-3 py-2">+15 000 FCFA / jour</span>
                         </label>
                     </div>
                 </div>
