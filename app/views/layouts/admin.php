@@ -37,7 +37,7 @@
 
     <!-- Mobile Header (Visible only on small screens) -->
     <div class="mobile-header">
-        <h4 class="fw-bold text-dark mb-0"><i class="fa-solid fa-car-side" style="color: #f4c053;"></i> AutoRent</h4>
+        <a href="index.php?action=admin_dashboard"><img src="logo.png" alt="AutoRent Logo" style="height: 40px;"></a>
         <button class="btn btn-light border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
             <i class="fa-solid fa-bars fs-4"></i>
         </button>
@@ -46,7 +46,7 @@
     <!-- Offcanvas Sidebar for Mobile -->
     <div class="offcanvas offcanvas-start border-0" tabindex="-1" id="mobileSidebar">
         <div class="offcanvas-header pt-4 px-4">
-            <h4 class="fw-bold text-dark mb-0"><i class="fa-solid fa-car-side" style="color: #f4c053;"></i> AutoRent</h4>
+            <img src="logo.png" alt="AutoRent Logo" style="height: 50px;">
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
         </div>
         <div class="offcanvas-body p-0 pt-3">
@@ -62,6 +62,9 @@
             
             <p class="text-muted small fw-bold px-4 mb-2 ms-2 mt-4" style="letter-spacing: 1px;">FINANCE & CLIENTS</p>
             <a href="index.php?action=admin_crm" class="sidebar-link <?= (isset($_GET['action']) && $_GET['action']=='admin_crm')?'active':'' ?>"><i class="fa-solid fa-users"></i> CRM & Clients</a>
+            <?php if($_SESSION['user_role'] === 'admin'): ?>
+                <a href="index.php?action=admin_staff" class="sidebar-link <?= (isset($_GET['action']) && strpos($_GET['action'], 'admin_staff')!==false)?'active':'' ?>"><i class="fa-solid fa-user-shield"></i> Personnel (Staff)</a>
+            <?php endif; ?>
             
             <p class="text-muted small fw-bold px-4 mt-5 mb-2 ms-2">AUTRES</p>
             <a href="index.php" class="sidebar-link text-primary"><i class="fa-solid fa-globe"></i> Voir le site</a>
@@ -74,8 +77,11 @@
         <!-- Desktop Sidebar (Hidden on mobile) -->
         <div class="sidebar d-none d-lg-block">
             <div class="text-center mb-4 px-4">
-                <h3 class="fw-bold text-dark"><i class="fa-solid fa-car-side" style="color: #f4c053;"></i> AutoRent</h3>
-                <span class="badge bg-dark text-warning rounded-pill mt-1">ERP Pro Edition</span>
+                <img src="logo.png" alt="AutoRent Logo" style="height: 75px;" class="mb-2">
+                <br>
+                <span class="badge bg-dark text-warning rounded-pill mt-1">
+                    <?= $_SESSION['user_role'] === 'admin' ? 'ERP Admin' : 'Workspace Agent' ?>
+                </span>
             </div>
             
             <p class="text-muted small fw-bold px-4 mb-2 ms-2 mt-4" style="letter-spacing: 1px;">CŒUR DE MÉTIER</p>
@@ -90,6 +96,9 @@
             
             <p class="text-muted small fw-bold px-4 mb-2 ms-2 mt-4" style="letter-spacing: 1px;">FINANCE & CLIENTS</p>
             <a href="index.php?action=admin_crm" class="sidebar-link <?= (isset($_GET['action']) && $_GET['action']=='admin_crm')?'active':'' ?>"><i class="fa-solid fa-users"></i> CRM & Clients</a>
+            <?php if($_SESSION['user_role'] === 'admin'): ?>
+                <a href="index.php?action=admin_staff" class="sidebar-link <?= (isset($_GET['action']) && strpos($_GET['action'], 'admin_staff')!==false)?'active':'' ?>"><i class="fa-solid fa-user-shield"></i> Personnel (Staff)</a>
+            <?php endif; ?>
             
             <p class="text-muted small fw-bold px-4 mt-5 mb-2 ms-2">AUTRES</p>
             <a href="index.php" class="sidebar-link text-primary"><i class="fa-solid fa-globe"></i> Voir le site</a>

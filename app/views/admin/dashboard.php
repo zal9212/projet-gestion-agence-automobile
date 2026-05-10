@@ -9,6 +9,7 @@
 
 <!-- Statistiques -->
 <div class="row g-4 mb-5">
+    <?php if($is_admin): ?>
     <div class="col-md-3">
         <div class="card bg-white h-100">
             <div class="card-body p-4 d-flex align-items-center">
@@ -22,6 +23,7 @@
             </div>
         </div>
     </div>
+    <?php endif; ?>
     <div class="col-md-3">
         <div class="card bg-white h-100">
             <div class="card-body p-4 d-flex align-items-center">
@@ -63,6 +65,32 @@
     </div>
 </div>
 
+<!-- Alertes Maintenance -->
+<?php if(!empty($alerts)): ?>
+<div class="alert alert-warning border-0 shadow-sm rounded-4 p-4 mb-5">
+    <div class="d-flex align-items-center mb-3">
+        <div class="bg-warning bg-opacity-20 text-warning rounded-circle d-flex align-items-center justify-content-center me-3" style="width:45px; height:45px;">
+            <i class="fa-solid fa-triangle-exclamation fs-5"></i>
+        </div>
+        <h5 class="fw-bold mb-0">Alertes Maintenance & Assurance</h5>
+    </div>
+    <div class="row g-3">
+        <?php foreach($alerts as $a): ?>
+        <div class="col-md-4">
+            <div class="bg-white rounded-3 p-3 border">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <span class="badge bg-light text-dark border small"><?= htmlspecialchars($a['immatriculation']) ?></span>
+                    <span class="text-danger small fw-bold"><?= date('d/m/Y', strtotime($a['date_assurance'])) ?></span>
+                </div>
+                <p class="mb-0 small fw-medium text-muted"><?= htmlspecialchars($a['marque'].' '.$a['modele']) ?></p>
+                <p class="mb-0 x-small text-danger" style="font-size: 0.75rem;">Assurance expire bientôt</p>
+            </div>
+        </div>
+        <?php endforeach; ?>
+    </div>
+</div>
+<?php endif; ?>
+
 <!-- Dernières réservations -->
 <div class="card mb-5">
     <div class="card-header bg-white border-bottom-0 pt-4 pb-0 px-4 d-flex justify-content-between align-items-center">
@@ -77,7 +105,7 @@
                         <th>Client</th>
                         <th>Véhicule</th>
                         <th>Période</th>
-                        <th>Montant</th>
+                        <?php if($is_admin): ?><th>Montant</th><?php endif; ?>
                         <th>Statut</th>
                     </tr>
                 </thead>
@@ -92,7 +120,9 @@
                             </div>
                         </td>
                         <td class="text-muted"><i class="fa-regular fa-calendar me-2"></i><?= date('d/m/Y', strtotime($r['date_debut'])) ?> &rarr; <?= date('d/m/Y', strtotime($r['date_fin'])) ?></td>
-                        <td class="fw-bold text-success"><?= number_format($r['prix_total'], 0, ',', ' ') ?> FCFA</td>
+                        <?php if($is_admin): ?>
+                            <td class="fw-bold text-success"><?= number_format($r['prix_total'], 0, ',', ' ') ?> FCFA</td>
+                        <?php endif; ?>
                         <td>
                             <?php 
                             $badge = match($r['status_reservation']) {

@@ -8,7 +8,12 @@
                 </div>
                 <div class="card-body p-4 bg-white">
                     <span class="badge bg-dark text-white mb-2 px-3 py-2 rounded-pill"><?= htmlspecialchars($car['categorie_nom']) ?></span>
-                    <h3 class="fw-bold mb-4"><?= htmlspecialchars($car['marque'] . ' ' . $car['modele']) ?></h3>
+                    <div class="d-flex align-items-center mb-4">
+                        <img src="<?= $car['brand_logo'] ?: 'https://raw.githubusercontent.com/fawazahmed0/car-logos/master/logos/' . strtolower($car['marque']) . '.png' ?>" 
+                             style="height: 40px; width: 40px; object-fit: contain;" class="me-3"
+                             onerror="this.style.display='none'">
+                        <h3 class="fw-bold mb-0"><?= htmlspecialchars($car['marque'] . ' ' . $car['modele']) ?></h3>
+                    </div>
                     
                     <div class="d-flex justify-content-between mb-3 border-bottom pb-3">
                         <span class="text-muted">Tarif Journalier</span>
@@ -44,15 +49,34 @@
                 <input type="hidden" name="car_id" value="<?= $car['id'] ?>">
                 
                 <div class="card border-0 shadow-sm p-4 rounded-4 mb-4">
-                    <h5 class="fw-bold mb-4"><span class="badge bg-warning text-dark rounded-circle me-2" style="width: 25px; height: 25px; display: inline-flex; align-items: center; justify-content: center;">1</span> Période de Location</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold mb-0"><span class="badge bg-warning text-dark rounded-circle me-2" style="width: 25px; height: 25px; display: inline-flex; align-items: center; justify-content: center;">1</span> Période de Location</h5>
+                        <?php if (!empty($bookings)): ?>
+                            <button type="button" class="btn btn-light btn-sm rounded-pill px-3" data-bs-toggle="collapse" data-bs-target="#bookedDates">Voir indisponibilités</button>
+                        <?php endif; ?>
+                    </div>
+
+                    <?php if (!empty($bookings)): ?>
+                    <div class="collapse mb-4" id="bookedDates">
+                        <div class="p-3 bg-light rounded-4">
+                            <h6 class="small fw-bold mb-2"><i class="fa-solid fa-calendar-xmark text-danger me-2"></i> Déjà réservé aux dates suivantes :</h6>
+                            <ul class="list-unstyled mb-0 small row g-1">
+                                <?php foreach($bookings as $b): ?>
+                                    <li class="col-md-6"><span class="badge bg-white text-dark border fw-medium"><?= date('d/m/Y', strtotime($b['date_debut'])) ?> au <?= date('d/m/Y', strtotime($b['date_fin'])) ?></span></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+
                     <div class="row g-4">
                         <div class="col-md-6">
                             <label class="form-label fw-bold text-muted small">Date de départ</label>
-                            <input type="date" name="date_debut" class="form-control form-control-lg bg-light border-0 rounded-4" value="<?= $_GET['date_debut'] ?? '' ?>" required>
+                            <input type="date" name="date_debut" class="form-control form-control-lg bg-light border-0 rounded-4" value="<?= $_GET['date_debut'] ?? '' ?>" required min="<?= date('Y-m-d') ?>">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold text-muted small">Date de retour</label>
-                            <input type="date" name="date_fin" class="form-control form-control-lg bg-light border-0 rounded-4" value="<?= $_GET['date_fin'] ?? '' ?>" required>
+                            <input type="date" name="date_fin" class="form-control form-control-lg bg-light border-0 rounded-4" value="<?= $_GET['date_fin'] ?? '' ?>" required min="<?= date('Y-m-d') ?>">
                         </div>
                     </div>
                 </div>
@@ -101,4 +125,16 @@
         </div>
     </div>
 </div>
+
+<script>
+document.querySelector('form').addEventListener('submit', function(e) {
+    const debut = new Date(document.querySelector('input[name="date_debut"]').value);
+    const fin = new Date(document.querySelector('input[name="date_fin"]').value);
+    
+    if (fin < debut) {
+        e.preventDefault();
+        alert("La date de retour ne peut pas être avant la date de départ !");
+    }
+});
+</script>
 <?php $content = ob_get_clean(); require 'app/views/layouts/front.php'; ?>

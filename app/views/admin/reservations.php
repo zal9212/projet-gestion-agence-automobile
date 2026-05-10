@@ -5,8 +5,23 @@
         <p class="text-muted">Gérez les demandes et changez les statuts.</p>
     </div>
     <div class="d-flex gap-2">
-        <button class="btn btn-outline-dark rounded-pill px-4"><i class="fa-solid fa-filter me-2"></i> Filtres</button>
-        <button class="btn btn-dark rounded-pill px-4"><i class="fa-solid fa-download me-2"></i> Exporter</button>
+        <div class="dropdown">
+            <button class="btn btn-outline-dark rounded-pill px-4 dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                <i class="fa-solid fa-filter me-2"></i> <?= isset($current_status) ? ucfirst(str_replace('_', ' ', $current_status)) : 'Filtres' ?>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-4">
+                <li><a class="dropdown-item" href="index.php?action=admin_reservations">Tous les statuts</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="index.php?action=admin_reservations&status=en_attente">En attente</a></li>
+                <li><a class="dropdown-item" href="index.php?action=admin_reservations&status=validee">Validée</a></li>
+                <li><a class="dropdown-item" href="index.php?action=admin_reservations&status=en_cours">En cours</a></li>
+                <li><a class="dropdown-item" href="index.php?action=admin_reservations&status=terminee">Terminée</a></li>
+                <li><a class="dropdown-item" href="index.php?action=admin_reservations&status=annulee">Annulée</a></li>
+            </ul>
+        </div>
+        <?php if($is_admin): ?>
+            <a href="index.php?action=admin_reservations_export" class="btn btn-dark rounded-pill px-4"><i class="fa-solid fa-download me-2"></i> Exporter</a>
+        <?php endif; ?>
     </div>
 </div>
 
@@ -20,7 +35,7 @@
                         <th class="py-3">Client</th>
                         <th class="py-3">Véhicule</th>
                         <th class="py-3">Dates</th>
-                        <th class="py-3">Montant</th>
+                        <?php if($is_admin): ?><th class="py-3">Montant</th><?php endif; ?>
                         <th class="py-3">Chauffeur</th>
                         <th class="py-3">Statut</th>
                         <th class="pe-4 py-3 text-end">Action</th>
@@ -42,7 +57,9 @@
                             <div class="small fw-medium text-dark"><?= date('d/m/Y', strtotime($r['date_debut'])) ?></div>
                             <div class="text-muted small">&rarr; <?= date('d/m/Y', strtotime($r['date_fin'])) ?></div>
                         </td>
-                        <td class="fw-bold text-success"><?= number_format($r['prix_total'], 0, ',', ' ') ?> FCFA</td>
+                        <?php if($is_admin): ?>
+                            <td class="fw-bold text-success"><?= number_format($r['prix_total'], 0, ',', ' ') ?> FCFA</td>
+                        <?php endif; ?>
                         <td>
                             <?php if(isset($r['avec_chauffeur']) && $r['avec_chauffeur']): ?>
                                 <span class="badge bg-dark rounded-pill"><i class="fa-solid fa-user-tie me-1"></i> Oui</span>

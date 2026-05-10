@@ -4,26 +4,39 @@
     <meta charset="UTF-8">
     <title>Contrat de Location #<?= $reservation['id'] ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #fff; color: #000; padding: 40px; }
-        .contract-header { border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 30px; }
-        .section-title { background: #f0f0f0; padding: 5px 10px; font-weight: bold; margin-top: 30px; margin-bottom: 15px; border-left: 4px solid #000; }
-        table th { background-color: #f9f9f9; }
-        .signature-box { border: 1px solid #ccc; height: 150px; text-align: center; margin-top: 20px; }
-        .signature-img { max-height: 140px; max-width: 100%; object-fit: contain; }
+        body { font-family: 'Outfit', sans-serif; background: #f0f0f0; color: #1a1a1a; padding: 40px 0; margin: 0; font-size: 13px; }
+        .contract-wrapper { width: 850px; background: #fff; padding: 50px; margin: 0 auto; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 8px; }
+        .contract-header { border-bottom: 2px solid #f4c053; padding-bottom: 20px; margin-bottom: 30px; }
+        .section-title { background: #1a1a1a; color: #f4c053; padding: 8px 15px; font-weight: 700; margin-top: 25px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; border-radius: 6px; font-size: 0.85rem; }
+        .table { border-color: #eee; margin-bottom: 15px; }
+        .table th, .table td { padding: 12px 15px; border-bottom: 1px solid #f8f8f8; }
+        .table th { background-color: #fcfcfc; color: #888; font-weight: 600; font-size: 0.7rem; text-transform: uppercase; border: none; }
+        .signature-box { border: 2px dashed #eee; height: 160px; text-align: center; margin-top: 15px; border-radius: 16px; background: #fafafa; overflow: hidden; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .signature-img { max-height: 130px; max-width: 100%; object-fit: contain; }
+        .brand-accent { color: #f4c053; }
+        .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); opacity: 0.04; font-size: 110px; font-weight: 900; pointer-events: none; z-index: -1; white-space: nowrap; color: #000; }
         @media print {
-            body { padding: 0; }
-            button { display: none !important; }
+            body { background: #fff; padding: 0; }
+            .contract-wrapper { box-shadow: none; border: none; width: 100%; padding: 20px; }
+            .no-print { display: none !important; }
         }
     </style>
 </head>
 <body>
-    <button onclick="window.print()" class="btn btn-dark float-end mb-4"><i class="fa-solid fa-print"></i> Imprimer le Contrat</button>
+    <div class="contract-wrapper">
+        <div class="watermark">TERANGA AUTO</div>
+    <div class="text-center mt-3 mb-4 no-print">
+        <button onclick="window.print()" class="btn btn-dark btn-lg rounded-pill px-5 fw-bold shadow">
+            <i class="fa-solid fa-print me-2"></i> Imprimer le Contrat
+        </button>
+    </div>
     
     <div class="contract-header d-flex justify-content-between align-items-center">
         <div>
-            <h2 class="fw-bold mb-0">AutoRent Agency</h2>
-            <p class="mb-0 text-muted">15 Avenue Cheikh Anta Diop, Plateau<br>contact@autorent.sn | +221 33 800 00 00</p>
+            <img src="logo.png" alt="Teranga Auto Logo" style="height: 70px;" class="mb-1">
+            <p class="mb-0 text-muted" style="font-size: 0.75rem;">Avenue Cheikh Anta Diop, Dakar<br>contact@teranga-auto.sn | +221 33 800 00 00</p>
         </div>
         <div class="text-end">
             <h3 class="mb-1">CONTRAT DE LOCATION</h3>
@@ -71,7 +84,17 @@
     <div class="row mt-5">
         <div class="col-6">
             <p class="fw-bold text-center">Représentant AutoRent</p>
-            <div class="signature-box d-flex align-items-center justify-content-center text-muted">Agence AutoRent</div>
+            <div class="signature-box d-flex flex-column align-items-center justify-content-center">
+                <?php 
+                // URL de vérification d'authenticité (Teranga Auto Digital Certificate)
+                $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
+                $verifyUrl = $baseUrl . "/pjgv/index.php?action=verify_contract&id=" . $reservation['id'];
+                
+                $qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" . urlencode($verifyUrl);
+                ?>
+                <img src="<?= $qrUrl ?>" alt="Vérification Authenticité" style="width: 100px; height: 100px;" class="mb-1">
+                <div class="small fw-bold text-uppercase"><?= htmlspecialchars(($reservation['agent_prenom'] ?? '') . ' ' . ($reservation['agent_nom'] ?? 'Agence Teranga Auto')) ?></div>
+            </div>
         </div>
         <div class="col-6">
             <p class="fw-bold text-center">Signature du Locataire</p>
@@ -83,6 +106,10 @@
                 <?php endif; ?>
             </div>
         </div>
-    </div>
+    </div> <!-- Fin contract-wrapper -->
+
+    <script>
+        // Utilitaire pour l'impression automatique si besoin
+    </script>
 </body>
 </html>

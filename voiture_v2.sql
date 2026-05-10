@@ -31,10 +31,11 @@ CREATE TABLE users (
     email VARCHAR(150) NOT NULL UNIQUE,
     telephone VARCHAR(20),
     password VARCHAR(255) NOT NULL,
-    role ENUM('admin', 'client') DEFAULT 'client',
+    role ENUM('admin', 'employee', 'client') DEFAULT 'client', -- AJOUT EMPLOYEE
     adresse TEXT,
-    num_permis VARCHAR(100), -- NOUVEAU
-    piece_identite VARCHAR(255), -- NOUVEAU: Chemin de l'image
+    num_permis VARCHAR(100),
+    piece_identite VARCHAR(255),
+    is_blacklisted BOOLEAN DEFAULT FALSE, -- NOUVEAU
     date_inscription TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
@@ -52,10 +53,11 @@ CREATE TABLE cars (
     boite_vitesse ENUM('Manuelle', 'Automatique') DEFAULT 'Manuelle',
     nb_places INT DEFAULT 5,
     prix_journalier DECIMAL(10, 2) NOT NULL,
-    caution DECIMAL(10, 2) DEFAULT 0, -- NOUVEAU: Montant bloqué
-    kilometrage INT DEFAULT 0, -- NOUVEAU
-    date_assurance DATE, -- NOUVEAU: Pour les alertes admin
+    caution DECIMAL(10, 2) DEFAULT 0,
+    kilometrage INT DEFAULT 0,
+    date_assurance DATE,
     image_principale VARCHAR(255),
+    brand_logo VARCHAR(255),
     status ENUM('disponible', 'maintenance', 'louée') DEFAULT 'disponible',
     climatisé BOOLEAN DEFAULT TRUE,
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
@@ -80,16 +82,22 @@ CREATE TABLE reservations (
     car_id INT NOT NULL,
     date_debut DATE NOT NULL,
     date_fin DATE NOT NULL,
-    lieu_prise_id INT, -- NOUVEAU
-    lieu_retour_id INT, -- NOUVEAU
-    avec_chauffeur BOOLEAN DEFAULT FALSE, -- NOUVEAU
+    lieu_prise_id INT,
+    lieu_retour_id INT,
+    avec_chauffeur BOOLEAN DEFAULT FALSE,
     prix_total DECIMAL(10, 2) NOT NULL,
     status_reservation ENUM('en_attente', 'validee', 'en_cours', 'terminee', 'annulee') DEFAULT 'en_attente',
+    -- NOUVEAUX CHAMPS POUR LE CHECKOUT
+    kilometrage_depart INT,
+    niveau_carburant_depart VARCHAR(50),
+    signature_base64 LONGTEXT,
+    validated_by INT, -- NOUVEAU : ID de l'employé/admin
     date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (car_id) REFERENCES cars(id) ON DELETE CASCADE,
     FOREIGN KEY (lieu_prise_id) REFERENCES locations(id) ON DELETE SET NULL,
-    FOREIGN KEY (lieu_retour_id) REFERENCES locations(id) ON DELETE SET NULL
+    FOREIGN KEY (lieu_retour_id) REFERENCES locations(id) ON DELETE SET NULL,
+    FOREIGN KEY (validated_by) REFERENCES users(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
 -- -----------------------------------------------------
@@ -109,7 +117,7 @@ CREATE TABLE reservation_options (
 CREATE TABLE check_in_out (
     id INT AUTO_INCREMENT PRIMARY KEY,
     reservation_id INT NOT NULL,
-    type ENUM('check_in', 'check_out') NOT NULL, -- in: remise au client, out: retour agence
+    type ENUM('check_in', 'check_out') NOT NULL,
     kilometrage INT NOT NULL,
     niveau_carburant ENUM('Reserve', '1/4', '1/2', '3/4', 'Plein') NOT NULL,
     etat_vehicule TEXT,
@@ -131,12 +139,37 @@ CREATE TABLE payments (
 ) ENGINE=InnoDB;
 
 -- -----------------------------------------------------
+-- 10. Table des Notifications
+-- -----------------------------------------------------
+CREATE TABLE notifications (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    message TEXT NOT NULL,
+    type ENUM('info', 'success', 'warning', 'danger') DEFAULT 'info',
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- -----------------------------------------------------
+-- 11. Table des Favoris
+-- -----------------------------------------------------
+CREATE TABLE favorites (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    car_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (car_id) REFERENCES cars(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_fav (user_id, car_id)
+) ENGINE=InnoDB;
+
+-- -----------------------------------------------------
 -- INSERTION DE DONNÉES DE TEST
 -- -----------------------------------------------------
 
 INSERT INTO locations (nom, frais_supplementaire) VALUES 
 ('Agence Centre-Ville', 0),
-('Aéroport AIBD', 15000), -- Frais en FCFA par exemple, ou en Euros selon la devise
+('Aéroport AIBD', 15000),
 ('Hôtel (Livraison)', 10000);
 
 INSERT INTO categories (nom, description) VALUES 

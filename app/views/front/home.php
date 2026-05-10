@@ -41,24 +41,30 @@
         <h6 class="fw-bold mb-0">Toutes les Marques</h6>
     </div>
     <div class="horizontal-scroll text-center align-items-center mb-4">
-        <div class="me-3">
-            <div style="width: 65px; height: 65px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
-                <i class="fa-brands fa-hooli fs-1 text-dark"></i>
+        <?php 
+        $view_pdo = get_pdo();
+        foreach($brands as $b): 
+            // On cherche si un logo existe pour cette marque
+            $stmt = $view_pdo->prepare("SELECT brand_logo FROM cars WHERE marque = ? AND brand_logo IS NOT NULL AND brand_logo != '' LIMIT 1");
+            $stmt->execute([$b]);
+            $logo = $stmt->fetchColumn();
+        ?>
+        <a href="index.php?action=search&q=<?= urlencode($b) ?>" class="text-decoration-none me-3">
+            <div style="width: 65px; height: 65px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f0f0f0; overflow: hidden; padding: 12px;">
+                <?php 
+                $brand_lower = strtolower($b);
+                $external_logo = "https://raw.githubusercontent.com/fawazahmed0/car-logos/master/logos/" . $brand_lower . ".png";
+                
+                if($logo): ?>
+                    <img src="<?= htmlspecialchars($logo) ?>" style="width: 100%; height: 100%; object-fit: contain;">
+                <?php else: ?>
+                    <img src="<?= $external_logo ?>" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" style="width: 100%; height: 100%; object-fit: contain;">
+                    <span class="fs-4 fw-bold text-dark" style="display: none;"><?= substr($b, 0, 1) ?></span>
+                <?php endif; ?>
             </div>
-            <small class="fw-bold text-muted d-block" style="font-size: 0.65rem;">HYUNDAI</small>
-        </div>
-        <div class="me-3">
-            <div style="width: 65px; height: 65px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
-                <span class="fs-4 fw-bold text-dark">KIA</span>
-            </div>
-            <small class="fw-bold text-muted d-block" style="font-size: 0.65rem;">KIA</small>
-        </div>
-        <div class="me-3">
-            <div style="width: 65px; height: 65px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
-                <i class="fa-brands fa-typo3 fs-1 text-dark"></i>
-            </div>
-            <small class="fw-bold text-muted d-block" style="font-size: 0.65rem;">TOYOTA</small>
-        </div>
+            <small class="fw-bold text-muted d-block text-uppercase" style="font-size: 0.6rem;"><?= htmlspecialchars($b) ?></small>
+        </a>
+        <?php endforeach; ?>
     </div>
 
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -70,7 +76,9 @@
         <?php foreach ($cars as $car): ?>
         <div class="col-6">
             <a href="index.php?action=reserve&id=<?= $car['id'] ?>" class="car-card text-decoration-none">
-                <div class="fav-btn"><i class="fa-regular fa-heart"></i></div>
+                <div class="fav-btn toggle-favorite <?= $car['is_fav'] ? 'active' : '' ?>" data-id="<?= $car['id'] ?>">
+                    <i class="<?= $car['is_fav'] ? 'fa-solid fa-heart text-danger' : 'fa-regular fa-heart' ?>"></i>
+                </div>
                 <div style="height: 100px; overflow: hidden; border-radius: 12px; margin-bottom: 8px;">
                     <img src="<?= htmlspecialchars($car['image_principale']) ?>" alt="<?= htmlspecialchars($car['modele']) ?>" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
@@ -96,20 +104,29 @@
                 </div>
             </div>
             
-            <div class="card border-0 shadow-lg" style="border-radius: 20px; max-width: 900px; position: absolute; bottom: -20px; left: 80px; right: 80px; z-index: 10;">
+            <div class="card border-0 shadow-lg" style="border-radius: 24px; max-width: 1000px; position: absolute; bottom: -40px; left: 50%; transform: translateX(-50%); z-index: 10; width: 90%;">
                 <div class="card-body p-4">
-                    <form action="index.php" method="GET" class="row g-3 align-items-end">
+                    <form action="index.php" method="GET" class="row g-3 align-items-center">
                         <input type="hidden" name="action" value="search">
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold text-dark mb-1">Date de départ</label>
-                            <input type="date" name="date_debut" class="form-control form-control-lg bg-light border-0" style="border-radius: 12px;" required>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold text-muted small mb-1 ms-2">Où & Quoi ?</label>
+                            <div class="input-group bg-light rounded-pill px-3">
+                                <span class="input-group-text bg-transparent border-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                                <input type="text" name="q" class="form-control bg-transparent border-0 ps-0" placeholder="Marque, modèle..." style="box-shadow:none;">
+                            </div>
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold text-dark mb-1">Date de retour</label>
-                            <input type="date" name="date_fin" class="form-control form-control-lg bg-light border-0" style="border-radius: 12px;" required>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold text-muted small mb-1 ms-2">Date de départ</label>
+                            <input type="date" name="date_debut" class="form-control bg-light border-0 rounded-pill px-4" style="height: 45px;">
                         </div>
-                        <div class="col-md-4">
-                            <button type="submit" class="btn btn-dark btn-lg w-100 fw-bold" style="border-radius: 12px; height: 50px;">Rechercher</button>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold text-muted small mb-1 ms-2">Date de retour</label>
+                            <input type="date" name="date_fin" class="form-control bg-light border-0 rounded-pill px-4" style="height: 45px;">
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-dark w-100 fw-bold rounded-pill" style="height: 45px; background: #1a1a1a;">
+                                <i class="fa-solid fa-search me-2"></i> Rechercher
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -117,38 +134,77 @@
         </div>
     </div>
     
-    <div style="height: 60px;"></div>
+    <div style="height: 100px;"></div>
+
+    <div class="container-fluid px-5 mb-5">
+        <h5 class="fw-bold mb-4">Toutes les Marques</h5>
+        <div class="horizontal-scroll text-center align-items-center mb-4">
+            <?php 
+            $view_pdo = get_pdo();
+            foreach($brands as $b): 
+                $stmt = $view_pdo->prepare("SELECT brand_logo FROM cars WHERE marque = ? AND brand_logo IS NOT NULL AND brand_logo != '' LIMIT 1");
+                $stmt->execute([$b]);
+                $logo = $stmt->fetchColumn();
+            ?>
+            <a href="index.php?action=search&q=<?= urlencode($b) ?>" class="text-decoration-none me-4">
+                <div style="width: 85px; height: 85px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); border: 1px solid #f0f0f0; overflow: hidden; padding: 18px; transition: 0.3s;" class="brand-circle">
+                    <?php 
+                    $brand_lower = strtolower($b);
+                    $external_logo = "https://raw.githubusercontent.com/fawazahmed0/car-logos/master/logos/" . $brand_lower . ".png";
+                    if($logo): ?>
+                        <img src="<?= htmlspecialchars($logo) ?>" style="width: 100%; height: 100%; object-fit: contain;">
+                    <?php else: ?>
+                        <img src="<?= $external_logo ?>" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" style="width: 100%; height: 100%; object-fit: contain;">
+                        <span class="fs-4 fw-bold text-dark" style="display: none;"><?= substr($b, 0, 1) ?></span>
+                    <?php endif; ?>
+                </div>
+                <small class="fw-bold text-muted d-block text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.5px;"><?= htmlspecialchars($b) ?></small>
+            </a>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    
+    <style>
+        .brand-circle:hover { transform: translateY(-5px); border-color: #f4c053; box-shadow: 0 10px 25px rgba(244, 192, 83, 0.15); }
+    </style>
 
     <div class="container-fluid px-5 mt-5 mb-5 pb-5">
         <div class="row g-5">
             <div class="col-lg-3">
-                <div class="card border-0 shadow-sm p-4 sticky-top" style="border-radius: 24px; top: 100px;">
+                <form action="index.php" method="GET" class="card border-0 shadow-sm p-4 sticky-top" style="border-radius: 24px; top: 100px;">
+                    <input type="hidden" name="action" value="search">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h5 class="fw-bold mb-0">Filtres</h5>
-                        <a href="#" class="text-muted text-decoration-none small">Réinitialiser</a>
+                        <a href="index.php?action=search" class="text-muted text-decoration-none small">Réinitialiser</a>
                     </div>
                     
                     <h6 class="fw-bold mb-3">Catégories</h6>
                     <div class="d-flex flex-column gap-2 mb-4 text-muted">
-                        <label class="form-check-label d-flex justify-content-between">
-                            <div><input type="checkbox" class="form-check-input me-2" checked> SUV</div>
+                        <?php 
+                        $pdo = get_pdo();
+                        $cats = $pdo->query("SELECT * FROM categories")->fetchAll();
+                        foreach($cats as $cat): 
+                        ?>
+                        <label class="form-check-label d-flex justify-content-between" style="cursor: pointer;">
+                            <div>
+                                <input type="checkbox" name="categories[]" value="<?= $cat['id'] ?>" class="form-check-input me-2"> 
+                                <?= htmlspecialchars($cat['nom']) ?>
+                            </div>
                         </label>
-                        <label class="form-check-label d-flex justify-content-between">
-                            <div><input type="checkbox" class="form-check-input me-2"> Berline</div>
-                        </label>
-                        <label class="form-check-label d-flex justify-content-between">
-                            <div><input type="checkbox" class="form-check-input me-2"> Premium</div>
-                        </label>
+                        <?php endforeach; ?>
                     </div>
 
                     <h6 class="fw-bold mb-3">Boîte de Vitesse</h6>
-                    <div class="d-flex gap-2 mb-4">
-                        <button class="btn btn-dark btn-sm rounded-pill px-4 py-2">Auto</button>
-                        <button class="btn btn-outline-secondary btn-sm rounded-pill px-4 py-2">Manuelle</button>
+                    <div class="mb-4">
+                        <select name="transmission" class="form-select border-0 bg-light rounded-pill px-3">
+                            <option value="">Toutes</option>
+                            <option value="Automatique">Automatique</option>
+                            <option value="Manuelle">Manuelle</option>
+                        </select>
                     </div>
 
-                    <button class="btn btn-warning w-100 fw-bold rounded-pill py-2">Appliquer</button>
-                </div>
+                    <button type="submit" class="btn btn-warning w-100 fw-bold rounded-pill py-2">Appliquer</button>
+                </form>
             </div>
 
             <div class="col-lg-9">
@@ -168,7 +224,9 @@
                             <div class="bg-light position-relative" style="height: 180px; overflow: hidden;">
                                 <img src="<?= htmlspecialchars($car['image_principale']) ?>" alt="<?= htmlspecialchars($car['modele']) ?>" style="width: 100%; height: 100%; object-fit: cover;">
                             </div>
-                            <div class="fav-btn"><i class="fa-regular fa-heart"></i></div>
+                            <div class="fav-btn toggle-favorite <?= $car['is_fav'] ? 'active' : '' ?>" data-id="<?= $car['id'] ?>">
+                                <i class="<?= $car['is_fav'] ? 'fa-solid fa-heart text-danger' : 'fa-regular fa-heart' ?>"></i>
+                            </div>
                             <div class="mt-auto">
                                 <span class="badge bg-light text-dark mb-2 px-3 py-2 rounded-pill"><?= htmlspecialchars($car['categorie_nom'] ?? 'Auto') ?></span>
                                 <h5 class="fw-bold mb-1 text-dark fs-5"><?= htmlspecialchars($car['marque'] . ' ' . $car['modele']) ?></h5>

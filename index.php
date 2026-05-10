@@ -18,7 +18,10 @@ switch ($action) {
     case 'reserve':            front_reserve(); break;
     case 'confirm_reserve':    front_confirm_reserve(); break;
     case 'history':            front_history(); break;
+    case 'favorites':          front_favorites(); break;
+    case 'toggle_favorite':    front_toggle_favorite(); break;
     case 'cancel_reservation': front_cancel_reservation(); break;
+    case 'verify_contract':    front_verify_contract(); break;
     case 'profile':            front_profile(); break;
     case 'profile_save':       auth_profile_save(); break; // Géré par Auth pour tous
 
@@ -37,10 +40,15 @@ switch ($action) {
     case 'admin_car_save':       admin_car_save(); break;
     case 'admin_car_delete':     admin_car_delete(); break;
     case 'admin_reservations':   admin_reservations(); break;
+    case 'admin_reservations_export': admin_reservations_export(); break;
     case 'admin_res_update':     admin_res_update(); break;
     case 'admin_crm':            admin_crm(); break;
     case 'admin_crm_blacklist':  admin_crm_blacklist(); break;
     case 'admin_crm_view':       admin_crm_view(); break;
+    case 'admin_staff':          admin_staff(); break;
+    case 'admin_staff_form':     admin_staff_form(); break;
+    case 'admin_staff_save':     admin_staff_save(); break;
+    case 'admin_staff_delete':   admin_staff_delete(); break;
     case 'admin_maintenance':    admin_maintenance(); break;
     case 'admin_checkin':        admin_checkin(); break;
     case 'admin_checkout_process': admin_checkout_process(); break;

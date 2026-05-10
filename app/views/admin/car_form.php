@@ -9,6 +9,13 @@ $isEdit = isset($car) && $car;
     </div>
 </div>
 
+<?php if(isset($_SESSION['success'])): ?>
+    <div class="alert alert-success rounded-4 border-0 mb-4"><?= $_SESSION['success']; unset($_SESSION['success']); ?></div>
+<?php endif; ?>
+<?php if(isset($_SESSION['error'])): ?>
+    <div class="alert alert-danger rounded-4 border-0 mb-4"><?= $_SESSION['error']; unset($_SESSION['error']); ?></div>
+<?php endif; ?>
+
 <div class="row">
     <div class="col-lg-8">
         <div class="card border-0 shadow-sm rounded-4 p-5">
@@ -39,7 +46,40 @@ $isEdit = isset($car) && $car;
                         <label class="form-label fw-bold text-muted small ms-2">Modèle</label>
                         <input type="text" name="modele" class="form-control form-control-lg bg-light border-0 rounded-pill px-4" value="<?= $isEdit ? htmlspecialchars($car['modele']) : '' ?>" placeholder="Ex: Classe C" required>
                     </div>
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold text-muted small ms-2">Sélectionnez le Logo de la Marque</label>
+                        <div class="d-flex flex-wrap gap-3 p-3 bg-light rounded-4 border">
+                            <?php foreach($available_logos as $logo): ?>
+                                <div class="brand-logo-item text-center cursor-pointer" onclick="selectLogo('<?= $logo['path'] ?>', this, '<?= $logo['name'] ?>')" style="width: 80px; transition: 0.2s;">
+                                    <div class="logo-box bg-white rounded-3 p-2 mb-1 border <?= ($isEdit && $car['brand_logo'] == $logo['path']) ? 'border-warning shadow-sm' : '' ?>" style="height: 60px; display: flex; align-items: center; justify-content: center;">
+                                        <img src="<?= $logo['path'] ?>" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                                    </div>
+                                    <small class="text-muted" style="font-size: 0.7rem;"><?= $logo['name'] ?></small>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <input type="hidden" name="brand_logo_path" id="selected_brand_logo" value="<?= $isEdit ? htmlspecialchars($car['brand_logo']) : '' ?>">
+                        
+                        <div class="mt-3">
+                            <label class="form-label fw-bold text-muted small ms-2">Ou uploader un logo personnalisé</label>
+                            <input type="file" name="brand_logo_file" class="form-control form-control-lg bg-light border-0 rounded-pill px-4" accept="image/*">
+                        </div>
+                    </div>
                 </div>
+
+                <script>
+                function selectLogo(path, element, brandName) {
+                    document.getElementById('selected_brand_logo').value = path;
+                    document.querySelector('input[name="marque"]').value = brandName;
+                    document.querySelectorAll('.logo-box').forEach(box => box.classList.remove('border-warning', 'shadow-sm'));
+                    element.querySelector('.logo-box').classList.add('border-warning', 'shadow-sm');
+                }
+                </script>
+                <style>
+                .brand-logo-item { cursor: pointer; }
+                .brand-logo-item:hover .logo-box { border-color: #f4c053; transform: translateY(-2px); }
+                .logo-box { transition: 0.2s; }
+                </style>
 
                 <h5 class="fw-bold mb-4">Spécifications Techniques</h5>
                 <div class="row g-4 mb-5">
@@ -81,6 +121,14 @@ $isEdit = isset($car) && $car;
                         <input type="text" name="image_principale" class="form-control bg-light border-0 rounded-pill px-4" value="<?= $isEdit ? htmlspecialchars($car['image_principale']) : '' ?>" placeholder="URL de l'image (optionnel)">
                     </div>
                     <div class="col-md-6">
+                        <label class="form-label fw-bold text-muted small ms-2">Date Prochaine Assurance</label>
+                        <input type="date" name="date_assurance" class="form-control form-control-lg bg-light border-0 rounded-pill px-4" value="<?= $isEdit ? htmlspecialchars($car['date_assurance'] ?? '') : '' ?>">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-muted small ms-2">Galerie Photos (Plusieurs fichiers)</label>
+                        <input type="file" name="gallery_files[]" class="form-control form-control-lg bg-light border-0 rounded-pill px-4" accept="image/*" multiple>
+                    </div>
+                    <div class="col-md-6">
                         <label class="form-label fw-bold text-muted small ms-2">Statut Actuel</label>
                         <select name="status" class="form-select form-select-lg bg-light border-0 rounded-pill px-4">
                             <option value="disponible" <?= ($isEdit && $car['status'] == 'disponible') ? 'selected' : '' ?>>Disponible</option>
@@ -89,6 +137,19 @@ $isEdit = isset($car) && $car;
                         </select>
                     </div>
                 </div>
+
+                <?php if($isEdit && !empty($gallery)): ?>
+                <h5 class="fw-bold mb-4">Galerie Actuelle</h5>
+                <div class="row g-3 mb-5">
+                    <?php foreach($gallery as $img): ?>
+                    <div class="col-md-3">
+                        <div class="position-relative">
+                            <img src="<?= htmlspecialchars($img['image_path']) ?>" class="img-fluid rounded-3 border" style="height: 120px; width: 100%; object-fit: cover;">
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+                <?php endif; ?>
 
                 <div class="text-end">
                     <a href="index.php?action=admin_cars" class="btn btn-light btn-lg rounded-pill px-5 fw-bold me-2">Annuler</a>

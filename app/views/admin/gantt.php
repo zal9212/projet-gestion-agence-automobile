@@ -1,12 +1,18 @@
 <?php 
 ob_start(); 
 $days_in_month = date('t');
-$month_name = date('F Y');
+$months_fr = [
+    'January' => 'Janvier', 'February' => 'Février', 'March' => 'Mars', 'April' => 'Avril',
+    'May' => 'Mai', 'June' => 'Juin', 'July' => 'Juillet', 'August' => 'Août',
+    'September' => 'Septembre', 'October' => 'Octobre', 'November' => 'Novembre', 'December' => 'Décembre'
+];
+$month_name_en = date('F');
+$month_name_fr = $months_fr[$month_name_en] . ' ' . date('Y');
 ?>
 <div class="d-flex justify-content-between align-items-center mb-5">
     <div>
-        <h2 class="fw-bold mb-1">Interactive Planning (Gantt)</h2>
-        <p class="text-muted">Global view of fleet occupation for <?= $month_name ?>.</p>
+        <h2 class="fw-bold mb-1">Planning Interactif (Gantt)</h2>
+        <p class="text-muted">Vue globale de l'occupation de la flotte pour <?= $month_name_fr ?>.</p>
     </div>
     <div class="d-flex gap-2">
         <button class="btn btn-outline-dark rounded-pill px-3"><i class="fa-solid fa-chevron-left"></i></button>
@@ -32,7 +38,7 @@ $month_name = date('F Y');
 
 <div class="gantt-container pb-2 mb-5">
     <div class="gantt-header">
-        <div class="gantt-car-col text-muted text-uppercase small">Vehicle</div>
+        <div class="gantt-car-col text-muted text-uppercase small">Véhicule</div>
         <?php for($i=1; $i<=$days_in_month; $i++): ?>
             <div class="gantt-day <?= ($i==date('j')) ? 'bg-warning text-dark rounded-bottom' : '' ?>">
                 <?= str_pad($i, 2, '0', STR_PAD_LEFT) ?>

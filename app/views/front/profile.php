@@ -6,7 +6,7 @@
                 <div class="text-center mb-5">
                     <img src="https://ui-avatars.com/api/?name=<?= urlencode($user['prenom']) ?>&background=random&size=128" class="rounded-circle shadow-sm mb-3" style="width: 100px;">
                     <h3 class="fw-bold mb-1"><?= htmlspecialchars($user['prenom'] . ' ' . $user['nom']) ?></h3>
-                    <p class="text-muted small">Membre depuis <?= date('M Y', strtotime($user['created_at'])) ?></p>
+                    <p class="text-muted small">Membre depuis <?= date('M Y', strtotime($user['date_inscription'])) ?></p>
                 </div>
 
                 <form action="index.php?action=profile_save" method="POST">

@@ -49,14 +49,16 @@
     <!-- Header Desktop -->
     <header class="desktop-nav">
         <div class="navbar-desktop-container">
-            <h3 class="fw-bold mb-0"><i class="fa-solid fa-car-side" style="color: var(--accent-yellow);"></i> AutoRent</h3>
+            <a href="index.php"><img src="logo.png" alt="AutoRent Logo" style="height: 60px;"></a>
             <div class="nav-links d-flex align-items-center">
                 <a href="index.php">Accueil</a>
                 <a href="index.php?action=search">Notre Flotte</a>
                 <?php if(isset($_SESSION['user_id'])): ?>
                     <a href="index.php?action=history">Mes Réservations</a>
-                    <?php if($_SESSION['user_role'] === 'admin'): ?>
-                        <a href="index.php?action=admin_dashboard" style="color: var(--accent-yellow);">Administration</a>
+                    <?php if(in_array($_SESSION['user_role'], ['admin', 'employee'])): ?>
+                        <a href="index.php?action=admin_dashboard" style="color: var(--accent-yellow);">
+                            <?= $_SESSION['user_role'] === 'admin' ? 'Administration' : 'Espace Agent' ?>
+                        </a>
                     <?php endif; ?>
                     
                     <!-- Notifications Desktop -->
@@ -91,7 +93,7 @@
     <!-- Header Mobile -->
     <div class="mobile-topbar d-md-none">
         <a href="index.php?action=profile" class="icon-btn"><i class="fa-solid fa-user-gear"></i></a>
-        <h5 class="fw-bold mb-0">AutoRent</h5>
+        <a href="index.php"><img src="logo.png" alt="AutoRent Logo" style="height: 45px;"></a>
         <div class="dropdown">
             <a href="#" class="icon-btn position-relative" data-bs-toggle="dropdown">
                 <i class="fa-regular fa-bell"></i>
@@ -128,10 +130,38 @@
     <div class="bottom-nav d-md-none">
         <a href="index.php" class="<?= (!isset($_GET['action']) || $_GET['action'] == 'home') ? 'active' : '' ?>"><i class="fa-solid fa-house"></i></a>
         <a href="index.php?action=search" class="<?= (isset($_GET['action']) && $_GET['action'] == 'search') ? 'active' : '' ?>"><i class="fa-solid fa-magnifying-glass"></i></a>
-        <a href="index.php?action=history" class="<?= (isset($_GET['action']) && $_GET['action'] == 'history') ? 'active' : '' ?>"><i class="fa-regular fa-heart"></i></a>
+        <a href="index.php?action=favorites" class="<?= (isset($_GET['action']) && $_GET['action'] == 'favorites') ? 'active' : '' ?>"><i class="fa-regular fa-heart"></i></a>
         <a href="<?= isset($_SESSION['user_id']) ? 'index.php?action=logout' : 'index.php?action=login' ?>"><i class="fa-regular fa-user"></i></a>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // GESTION DES FAVORIS (AJAX)
+        document.querySelectorAll('.toggle-favorite').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const carId = this.dataset.id;
+                const icon = this.querySelector('i');
+                
+                fetch('index.php?action=toggle_favorite&id=' + carId)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'added') {
+                            icon.className = 'fa-solid fa-heart text-danger';
+                            this.classList.add('active');
+                        } else if (data.status === 'removed') {
+                            icon.className = 'fa-regular fa-heart';
+                            this.classList.remove('active');
+                        } else if (data.status === 'error') {
+                            window.location.href = 'index.php?action=login';
+                        }
+                    })
+                    .catch(err => console.error('Erreur favoris:', err));
+            });
+        });
+    });
+    </script>
 </body>
 </html>
