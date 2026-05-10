@@ -6,7 +6,7 @@
                 <div class="mb-4">
                     <i class="fa-solid fa-car-side fa-3x" style="color: var(--accent-yellow);"></i>
                     <h2 class="fw-bold mt-3">Créer un compte</h2>
-                    <p class="text-muted">Rejoignez AutoRent en quelques clics</p>
+                    <p class="text-muted">Rejoignez Teranga Auto en quelques clics</p>
                 </div>
                 
                 <?php if (isset($_SESSION['error'])): ?>

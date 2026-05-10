@@ -68,7 +68,7 @@ $month_name_fr = $months_fr[$month_name_en] . ' ' . date('Y');
                 $current_month_start = strtotime(date('Y-m-01'));
                 $current_month_end = strtotime(date('Y-m-t'));
                 
-                // Ignorer si ça ne touche pas ce mois-ci du tout
+                // On ignore si la réservation ne touche pas du tout ce mois-ci
                 if($end_date < $current_month_start || $start_date > $current_month_end) continue;
                 
                 // Calculer les bornes visibles dans le mois courant
@@ -81,9 +81,8 @@ $month_name_fr = $months_fr[$month_name_en] . ' ' . date('Y');
                 $duration = $visible_end_day - $visible_start_day + 1;
                 if ($duration <= 0) continue;
 
-                // 250px est la largeur de la col voiture. 45px est la min-width d'une cellule.
-                // Note: En responsive CSS Flex, la largeur exacte dépend de l'écran. 
-                // Pour un vrai Gantt robuste, on utilise des pourcentages.
+                // La largeur de la colonne voiture est de 250px. Les cellules font 45px min.
+                // Note: Le positionnement utilise calc() pour s'adapter à la colonne fixe.
                 $left_percent = (($visible_start_day - 1) / $days_in_month) * 100;
                 $width_percent = ($duration / $days_in_month) * 100;
                 

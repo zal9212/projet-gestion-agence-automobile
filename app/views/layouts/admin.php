@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AutoRent ERP Workspace</title>
+    <title>Teranga Auto ERP Workspace</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -27,7 +27,7 @@
             .search-bar-container { display: none !important; } /* Hide big search on mobile */
         }
         
-        /* Responsive Tables */
+        /* Tableaux adaptatifs */
         .table-responsive { border-radius: 15px; }
         .table-responsive table th, .table-responsive table td { white-space: nowrap; }
         .gantt-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -35,18 +35,18 @@
 </head>
 <body>
 
-    <!-- Mobile Header (Visible only on small screens) -->
+    <!-- En-tête Mobile (Visible uniquement sur petits écrans) -->
     <div class="mobile-header">
-        <a href="index.php?action=admin_dashboard"><img src="logo.png" alt="AutoRent Logo" style="height: 40px;"></a>
+        <a href="index.php?action=admin_dashboard"><img src="logo.png" alt="Teranga Auto Logo" style="height: 40px;"></a>
         <button class="btn btn-light border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
             <i class="fa-solid fa-bars fs-4"></i>
         </button>
     </div>
 
-    <!-- Offcanvas Sidebar for Mobile -->
+    <!-- Menu latéral escamotable pour Mobile -->
     <div class="offcanvas offcanvas-start border-0" tabindex="-1" id="mobileSidebar">
         <div class="offcanvas-header pt-4 px-4">
-            <img src="logo.png" alt="AutoRent Logo" style="height: 50px;">
+            <img src="logo.png" alt="Teranga Auto Logo" style="height: 50px;">
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
         </div>
         <div class="offcanvas-body p-0 pt-3">
@@ -77,7 +77,7 @@
         <!-- Desktop Sidebar (Hidden on mobile) -->
         <div class="sidebar d-none d-lg-block">
             <div class="text-center mb-4 px-4">
-                <img src="logo.png" alt="AutoRent Logo" style="height: 75px;" class="mb-2">
+                <img src="logo.png" alt="Teranga Auto Logo" style="height: 75px;" class="mb-2">
                 <br>
                 <span class="badge bg-dark text-warning rounded-pill mt-1">
                     <?= $_SESSION['user_role'] === 'admin' ? 'ERP Admin' : 'Workspace Agent' ?>

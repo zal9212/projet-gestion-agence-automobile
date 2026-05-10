@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AutoRent - <?= $title ?? 'Location de Voitures' ?></title>
+    <title>Teranga Auto - <?= $title ?? 'Location de Voitures' ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -46,10 +46,10 @@
     </style>
 </head>
 <body>
-    <!-- Header Desktop -->
+    <!-- En-tête Ordinateur -->
     <header class="desktop-nav">
         <div class="navbar-desktop-container">
-            <a href="index.php"><img src="logo.png" alt="AutoRent Logo" style="height: 60px;"></a>
+            <a href="index.php"><img src="logo.png" alt="Teranga Auto Logo" style="height: 60px;"></a>
             <div class="nav-links d-flex align-items-center">
                 <a href="index.php">Accueil</a>
                 <a href="index.php?action=search">Notre Flotte</a>
@@ -93,7 +93,7 @@
     <!-- Header Mobile -->
     <div class="mobile-topbar d-md-none">
         <a href="index.php?action=profile" class="icon-btn"><i class="fa-solid fa-user-gear"></i></a>
-        <a href="index.php"><img src="logo.png" alt="AutoRent Logo" style="height: 45px;"></a>
+        <a href="index.php"><img src="logo.png" alt="Teranga Auto Logo" style="height: 45px;"></a>
         <div class="dropdown">
             <a href="#" class="icon-btn position-relative" data-bs-toggle="dropdown">
                 <i class="fa-regular fa-bell"></i>

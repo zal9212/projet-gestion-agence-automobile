@@ -79,11 +79,11 @@
     </table>
 
     <div class="section-title">CONDITIONS ET SIGNATURES</div>
-    <p class="small text-muted">Le locataire reconnaît avoir reçu le véhicule dans l'état décrit ci-dessus et accepte les conditions générales de location d'AutoRent. Le véhicule doit être restitué à la date et l'heure convenues. Toute infraction au code de la route ou dommage survenu pendant la période de location relève de la seule responsabilité du locataire.</p>
+    <p class="small text-muted">Le locataire reconnaît avoir reçu le véhicule dans l'état décrit ci-dessus et accepte les conditions générales de location de Teranga Auto. Le véhicule doit être restitué à la date et l'heure convenues. Toute infraction au code de la route ou dommage survenu pendant la période de location relève de la seule responsabilité du locataire.</p>
 
     <div class="row mt-5">
         <div class="col-6">
-            <p class="fw-bold text-center">Représentant AutoRent</p>
+            <p class="fw-bold text-center">Représentant Teranga Auto</p>
             <div class="signature-box d-flex flex-column align-items-center justify-content-center">
                 <?php 
                 // URL de vérification d'authenticité (Teranga Auto Digital Certificate)

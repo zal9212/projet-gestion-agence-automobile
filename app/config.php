@@ -10,7 +10,7 @@ define('DB_USER', 'root');
 define('DB_PASS', '');
 
 // Paramètres Agence
-define('AGENCY_NAME', 'AutoRent ERP');
+define('AGENCY_NAME', 'Teranga Auto');
 define('AGENCY_CITY', 'Dakar, Sénégal');
 define('CURRENCY', 'FCFA');
 

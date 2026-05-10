@@ -247,7 +247,7 @@ function admin_reservations_export() {
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     header('Content-Type: text/csv; charset=utf-8');
-    header('Content-Disposition: attachment; filename=reservations_autorent_' . date('Y-m-d') . '.csv');
+    header('Content-Disposition: attachment; filename=reservations_terangaauto_' . date('Y-m-d') . '.csv');
     
     $output = fopen('php://output', 'w');
     fputcsv($output, ['ID', 'Nom', 'Prenom', 'Marque', 'Modele', 'Date Debut', 'Date Fin', 'Total (FCFA)', 'Statut']);

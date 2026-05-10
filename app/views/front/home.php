@@ -1,6 +1,6 @@
 <?php $title = "Accueil"; ob_start(); ?>
 
-<!-- ================= MOBILE VIEW ================= -->
+<!-- ================= VUE MOBILE ================= -->
 <div class="d-md-none px-4 mt-2 pt-3 pb-5">
     <?php if(isset($_SESSION['user_id'])): ?>
         <h1 class="fw-bold mb-1">Salut <?= htmlspecialchars($_SESSION['user_prenom']) ?> !</h1>
@@ -92,7 +92,7 @@
     </div>
 </div>
 
-<!-- ================= DESKTOP VIEW ================= -->
+<!-- ================= VUE ORDINATEUR ================= -->
 <div class="d-none d-md-block">
     <div class="container-fluid px-5 mt-4">
         <div class="desktop-hero position-relative overflow-hidden" style="border-radius: 30px; background: linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 60%, rgba(0,0,0,0.05) 100%), url('3d-car-with-minimal-background.jpg') center/cover no-repeat; padding: 120px 80px; color: white;">

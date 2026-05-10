@@ -13,7 +13,7 @@
                 <img src="https://ui-avatars.com/api/?name=<?= urlencode($user['prenom']) ?>&background=1a1a1a&color=fff&size=128" class="rounded-circle shadow-sm me-4" style="width: 80px;">
                 <div>
                     <h4 class="fw-bold mb-0"><?= htmlspecialchars($user['prenom'] . ' ' . $user['nom']) ?></h4>
-                    <span class="badge bg-dark text-warning rounded-pill mt-1">Administrateur AutoRent</span>
+                    <span class="badge bg-dark text-warning rounded-pill mt-1">Administrateur Teranga Auto</span>
                 </div>
             </div>
 
