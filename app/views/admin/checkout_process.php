@@ -31,7 +31,7 @@
             <input type="hidden" name="id" value="<?= $reservation['id'] ?>">
             <input type="hidden" name="signature_base64" id="signature_data">
             
-            <div class="card border-0 shadow-sm rounded-4 p-5 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 p-3 p-md-5 mb-4">
                 <h5 class="fw-bold mb-4">1. État au Départ</h5>
                 <div class="row g-4">
                     <div class="col-md-6">
@@ -50,7 +50,7 @@
                 </div>
             </div>
 
-            <div class="card border-0 shadow-sm rounded-4 p-5 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 p-3 p-md-5 mb-4">
                 <h5 class="fw-bold mb-4">2. Inspection Photos (Facultatif)</h5>
                 <div class="bg-light p-4 rounded-4 text-center border border-2 border-dashed">
                     <i class="fa-solid fa-camera fa-2x text-muted mb-3"></i>
@@ -65,7 +65,7 @@
                     <button type="button" class="btn btn-light btn-sm rounded-pill px-3" onclick="clearSignature()"><i class="fa-solid fa-eraser me-2"></i> Effacer</button>
                 </div>
                 <div class="border rounded-4 bg-light p-2 mb-3" style="touch-action: none;">
-                    <canvas id="signaturePad" width="600" height="200" style="width: 100%; border-radius: 15px; background: white; cursor: crosshair;"></canvas>
+                    <canvas id="signaturePad" width="600" height="350" style="width: 100%; height: 350px; border-radius: 15px; background: white; cursor: crosshair;"></canvas>
                 </div>
                 <p class="text-muted small text-center mb-0">Je confirme avoir pris connaissance de l'état du véhicule détaillé ci-dessus.</p>
             </div>

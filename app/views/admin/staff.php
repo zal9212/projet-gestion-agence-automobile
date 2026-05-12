@@ -1,10 +1,10 @@
 <?php ob_start(); ?>
-<div class="d-flex justify-content-between align-items-end mb-4">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 gap-3">
     <div>
         <h2 class="fw-bold mb-1">Gestion du Personnel</h2>
-        <p class="text-muted">Gérez les accès administrateurs et employés de la plateforme.</p>
+        <p class="text-muted mb-0">Gérez les accès administrateurs et employés de la plateforme.</p>
     </div>
-    <a href="index.php?action=admin_staff_form" class="btn btn-dark rounded-pill px-4"><i class="fa-solid fa-user-plus me-2"></i> Ajouter un membre</a>
+    <a href="index.php?action=admin_staff_form" class="btn btn-dark rounded-pill px-4 flex-fill flex-md-initial text-nowrap"><i class="fa-solid fa-user-plus me-2"></i> Ajouter un membre</a>
 </div>
 
 <?php if(isset($_SESSION['success'])): ?>

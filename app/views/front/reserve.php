@@ -207,11 +207,14 @@ function selectDate(dateStr, isReserved) {
     } else if (date < selection.start) {
         selection.start = date;
     } else {
-        // Vérifier s'il y a une réservation entre start et la nouvelle date
+        // Vérifier s'il y a une réservation qui intersecte la plage [selection.start, date]
         const conflict = bookedPeriods.some(b => {
-            const bStart = new Date(b.date_debut);
-            const bEnd = new Date(b.date_fin);
-            return (bStart > selection.start && bStart < date);
+            const bStart = new Date(b.date_debut); bStart.setHours(0,0,0,0);
+            const bEnd = new Date(b.date_fin); bEnd.setHours(0,0,0,0);
+            const sStart = new Date(selection.start); sStart.setHours(0,0,0,0);
+            const sEnd = new Date(date); sEnd.setHours(0,0,0,0);
+            
+            return (bStart <= sEnd && bEnd >= sStart);
         });
         
         if (conflict) {

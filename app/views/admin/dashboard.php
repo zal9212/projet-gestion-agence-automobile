@@ -1,8 +1,8 @@
 <?php ob_start(); ?>
-<div class="d-flex justify-content-between align-items-end mb-4">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 gap-3">
     <div>
         <h2 class="fw-bold mb-1">Vue d'ensemble</h2>
-        <p class="text-muted">Ravi de vous revoir. Voici les chiffres de la journée.</p>
+        <p class="text-muted mb-0">Ravi de vous revoir. Voici les chiffres de la journée.</p>
     </div>
     <button class="btn btn-dark rounded-pill px-4"><i class="fa-solid fa-download me-2"></i> Exporter</button>
 </div>

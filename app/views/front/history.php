@@ -1,8 +1,8 @@
 <?php $title = "Mes Réservations"; ob_start(); ?>
 <div class="container-fluid px-4 px-md-5 mt-4 mt-md-5 mb-5 pb-5">
-    <div class="d-flex justify-content-between align-items-center mb-5">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
         <h2 class="fw-bold mb-0">Mes Réservations</h2>
-        <a href="index.php" class="btn btn-dark rounded-pill px-4"><i class="fa-solid fa-plus me-2"></i> Nouvelle Réservation</a>
+        <a href="index.php" class="btn btn-dark rounded-pill px-4 flex-fill flex-md-initial"><i class="fa-solid fa-plus me-2"></i> Nouvelle Réservation</a>
     </div>
     
     <?php if (isset($_SESSION['success'])): ?>

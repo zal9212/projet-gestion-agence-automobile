@@ -1,14 +1,14 @@
 <?php $title = "Résultats de recherche"; ob_start(); ?>
 <div class="container-fluid px-4 px-md-5 mt-4 mt-md-5 mb-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold text-dark">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <h3 class="fw-bold text-dark mb-0">
             <?php if(!empty($_GET['date_debut']) && !empty($_GET['date_fin'])): ?>
-                Véhicules disponibles du <?= htmlspecialchars(date('d/m/Y', strtotime($_GET['date_debut']))) ?> au <?= htmlspecialchars(date('d/m/Y', strtotime($_GET['date_fin']))) ?>
+                Disponibilités du <?= htmlspecialchars(date('d/m/Y', strtotime($_GET['date_debut']))) ?> au <?= htmlspecialchars(date('d/m/Y', strtotime($_GET['date_fin']))) ?>
             <?php else: ?>
-                Tous nos véhicules disponibles
+                Véhicules disponibles
             <?php endif; ?>
         </h3>
-        <a href="index.php" class="btn btn-outline-dark rounded-pill px-4"><i class="fa-solid fa-arrow-left me-2"></i> Modifier les dates</a>
+        <a href="index.php" class="btn btn-outline-dark rounded-pill px-4 flex-fill flex-md-initial text-nowrap"><i class="fa-solid fa-arrow-left me-2"></i> Modifier les dates</a>
     </div>
     
     <div class="row g-5 mt-2">
@@ -65,8 +65,12 @@
                     <?php foreach ($cars as $car): ?>
                     <div class="col-md-6 col-xl-4">
                         <a href="index.php?action=reserve&id=<?= $car['id'] ?><?= !empty($_GET['date_debut']) ? '&date_debut='.urlencode($_GET['date_debut']) : '' ?><?= !empty($_GET['date_fin']) ? '&date_fin='.urlencode($_GET['date_fin']) : '' ?>" class="car-card text-decoration-none h-100 d-flex flex-column">
-                            <div style="height: 180px; overflow: hidden; border-radius: 15px; flex-shrink: 0;">
-                                <img src="<?= htmlspecialchars($car['image_principale']) ?>" alt="<?= htmlspecialchars($car['modele']) ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                            <div style="height: 180px; overflow: hidden; border-radius: 15px; flex-shrink: 0; background: #f8f9fa; display: flex; align-items: center; justify-content: center;">
+                                <?php if(!empty($car['image_principale'])): ?>
+                                    <img src="<?= htmlspecialchars($car['image_principale']) ?>" alt="<?= htmlspecialchars($car['modele']) ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                                <?php else: ?>
+                                    <i class="fa-solid fa-car fa-4x text-muted opacity-25"></i>
+                                <?php endif; ?>
                             </div>
                             <div class="mt-auto p-3">
                                 <span class="badge bg-light text-dark mb-2 px-3 py-2 rounded-pill border"><?= htmlspecialchars($car['categorie_nom'] ?? 'Auto') ?></span>

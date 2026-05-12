@@ -15,15 +15,19 @@ $next_month = $view_month + 1; $next_year = $view_year;
 if ($next_month == 13) { $next_month = 1; $next_year++; }
 ?>
 
-<div class="d-flex justify-content-between align-items-center mb-5">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-4">
     <div>
         <h2 class="fw-bold mb-1">Planning Interactif (Gantt)</h2>
-        <p class="text-muted">Vue globale de l'occupation de la flotte pour <?= $month_name_fr ?>.</p>
+        <p class="text-muted mb-0">Vue globale de l'occupation de la flotte pour <?= $month_name_fr ?>.</p>
     </div>
     <div class="d-flex gap-2">
-        <a href="index.php?action=admin_gantt&month=<?= $prev_month ?>&year=<?= $prev_year ?>" class="btn btn-outline-dark rounded-pill px-3 shadow-sm"><i class="fa-solid fa-chevron-left me-1"></i> Précédent</a>
-        <a href="index.php?action=admin_gantt&month=<?= date('m') ?>&year=<?= date('Y') ?>" class="btn btn-light rounded-pill px-3 border shadow-sm">Aujourd'hui</a>
-        <a href="index.php?action=admin_gantt&month=<?= $next_month ?>&year=<?= $next_year ?>" class="btn btn-outline-dark rounded-pill px-3 shadow-sm">Suivant <i class="fa-solid fa-chevron-right ms-1"></i></a>
+        <a href="index.php?action=admin_gantt&month=<?= $prev_month ?>&year=<?= $prev_year ?>" class="btn btn-outline-dark rounded-pill px-3 shadow-sm flex-fill flex-md-initial">
+            <i class="fa-solid fa-chevron-left me-1"></i> <span class="d-none d-sm-inline">Précédent</span>
+        </a>
+        <a href="index.php?action=admin_gantt&month=<?= date('m') ?>&year=<?= date('Y') ?>" class="btn btn-light rounded-pill px-3 border shadow-sm flex-fill flex-md-initial">Aujourd'hui</a>
+        <a href="index.php?action=admin_gantt&month=<?= $next_month ?>&year=<?= $next_year ?>" class="btn btn-outline-dark rounded-pill px-3 shadow-sm flex-fill flex-md-initial">
+            <span class="d-none d-sm-inline">Suivant</span> <i class="fa-solid fa-chevron-right ms-1"></i>
+        </a>
     </div>
 </div>
 
@@ -32,6 +36,9 @@ if ($next_month == 13) { $next_month = 1; $next_year++; }
     .gantt-container { overflow-x: auto; scroll-behavior: smooth; }
     .gantt-header { display: flex; border-bottom: 2px solid #eee; background: #fdfdfd; position: sticky; top: 0; z-index: 20; }
     .gantt-car-col { min-width: 280px; padding: 15px 20px; font-weight: bold; border-right: 1px solid #eee; position: sticky; left: 0; background: white; z-index: 30; }
+    @media (max-width: 768px) {
+        .gantt-car-col { min-width: 140px; padding: 10px; font-size: 0.8rem; }
+    }
     .gantt-day { flex: 1; min-width: 50px; text-align: center; padding: 15px 0; border-right: 1px solid #f9f9f9; font-size: 0.85rem; font-weight: 500; color: #666; }
     .gantt-row { display: flex; border-bottom: 1px solid #f5f5f5; position: relative; transition: background 0.2s; }
     .gantt-row:hover { background: #fafafa; }

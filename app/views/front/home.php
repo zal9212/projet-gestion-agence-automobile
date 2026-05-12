@@ -18,13 +18,13 @@
         </button>
     </form>
 
-    <div class="yellow-banner" style="background: linear-gradient(to right, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.1) 100%), url('3d-car-with-minimal-background.jpg') center/cover no-repeat; color: white;">
+    <div class="yellow-banner" style="background: linear-gradient(to right, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.1) 100%), url('assets/img/3d-car-with-minimal-background.jpg') center/cover no-repeat; color: white;">
         <div style="position: relative; z-index: 2;">
             <h3 class="fs-4" style="color:white;">Nouveautés</h3>
             <p style="color: rgba(255,255,255,0.8);">Véhicules Premium</p>
             <a href="index.php?action=search" class="btn-dark-pill" style="background: #f4c053; color: #000;">Explorer</a>
         </div>
-        <img src="3d-car-with-minimal-background.jpg" alt="SUV" style="opacity: 0; position: absolute;">
+        <img src="assets/img/3d-car-with-minimal-background.jpg" alt="SUV" style="opacity: 0; position: absolute;">
     </div>
 
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -79,8 +79,12 @@
                 <div class="fav-btn toggle-favorite <?= $car['is_fav'] ? 'active' : '' ?>" data-id="<?= $car['id'] ?>">
                     <i class="<?= $car['is_fav'] ? 'fa-solid fa-heart text-danger' : 'fa-regular fa-heart' ?>"></i>
                 </div>
-                <div style="height: 100px; overflow: hidden; border-radius: 12px; margin-bottom: 8px;">
-                    <img src="<?= htmlspecialchars($car['image_principale']) ?>" alt="<?= htmlspecialchars($car['modele']) ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                <div style="height: 100px; overflow: hidden; border-radius: 12px; margin-bottom: 8px; background: #f8f9fa; display: flex; align-items: center; justify-content: center;">
+                    <?php if(!empty($car['image_principale'])): ?>
+                        <img src="<?= htmlspecialchars($car['image_principale']) ?>" alt="<?= htmlspecialchars($car['modele']) ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                    <?php else: ?>
+                        <i class="fa-solid fa-car fa-2x text-muted opacity-25"></i>
+                    <?php endif; ?>
                 </div>
                 <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.9rem;"><?= htmlspecialchars($car['marque'] . ' ' . $car['modele']) ?></h6>
                 <p class="text-muted mb-0 mt-1" style="font-size: 0.75rem;">
@@ -95,7 +99,7 @@
 <!-- ================= VUE ORDINATEUR ================= -->
 <div class="d-none d-md-block">
     <div class="container-fluid px-5 mt-4">
-        <div class="desktop-hero position-relative overflow-hidden" style="border-radius: 30px; background: linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 60%, rgba(0,0,0,0.05) 100%), url('3d-car-with-minimal-background.jpg') center/cover no-repeat; padding: 120px 80px; color: white;">
+        <div class="desktop-hero position-relative overflow-hidden" style="border-radius: 30px; background: linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 60%, rgba(0,0,0,0.05) 100%), url('assets/img/3d-car-with-minimal-background.jpg') center/cover no-repeat; padding: 120px 80px; color: white;">
             <div class="row">
                 <div class="col-lg-7">
                     <span class="badge bg-warning text-dark mb-3 px-3 py-2 rounded-pill fw-bold">+100 Véhicules Premium</span>
@@ -221,8 +225,12 @@
                     <?php foreach ($cars as $car): ?>
                     <div class="col-md-6 col-xl-4">
                         <a href="index.php?action=reserve&id=<?= $car['id'] ?>" class="car-card h-100 d-flex flex-column">
-                            <div class="bg-light position-relative" style="height: 180px; overflow: hidden;">
-                                <img src="<?= htmlspecialchars($car['image_principale']) ?>" alt="<?= htmlspecialchars($car['modele']) ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                            <div class="bg-light position-relative d-flex align-items-center justify-content-center" style="height: 180px; overflow: hidden;">
+                                <?php if(!empty($car['image_principale'])): ?>
+                                    <img src="<?= htmlspecialchars($car['image_principale']) ?>" alt="<?= htmlspecialchars($car['modele']) ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                                <?php else: ?>
+                                    <i class="fa-solid fa-car fa-4x text-muted opacity-25"></i>
+                                <?php endif; ?>
                             </div>
                             <div class="fav-btn toggle-favorite <?= $car['is_fav'] ? 'active' : '' ?>" data-id="<?= $car['id'] ?>">
                                 <i class="<?= $car['is_fav'] ? 'fa-solid fa-heart text-danger' : 'fa-regular fa-heart' ?>"></i>

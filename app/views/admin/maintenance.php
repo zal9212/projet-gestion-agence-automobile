@@ -1,10 +1,10 @@
 <?php ob_start(); ?>
-<div class="d-flex justify-content-between align-items-center mb-5">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
     <div>
         <h2 class="fw-bold mb-1">Maintenance de la Flotte</h2>
-        <p class="text-muted">Suivi des vidanges, visites techniques et assurances.</p>
+        <p class="text-muted mb-0">Suivi des vidanges, visites techniques et assurances.</p>
     </div>
-    <a href="index.php?action=admin_cars" class="btn btn-dark rounded-pill px-4"><i class="fa-solid fa-car me-2"></i> Gérer la Flotte</a>
+    <a href="index.php?action=admin_cars" class="btn btn-dark rounded-pill px-4 flex-fill flex-md-initial"><i class="fa-solid fa-car me-2"></i> Gérer la Flotte</a>
 </div>
 
 <div class="row g-4">

@@ -77,23 +77,50 @@ function auth_profile_save() {
     $email = $_POST['email'];
     $telephone = $_POST['telephone'];
     
+   //verifie si le mail existe
+    $check_email = $pdo->prepare("SELECT id FROM users WHERE email = ? AND id != ?");
+    $check_email->execute([$email, $id]);
+    if ($check_email->fetch()) {
+        $_SESSION['error'] = "Cette adresse email est déjà utilisée par un autre compte.";
+        redirect($_SERVER['HTTP_REFERER']);
+    }
+
     // Gestion de la photo de profil
     if (isset($_FILES['photo_profil']) && $_FILES['photo_profil']['error'] == UPLOAD_ERR_OK) {
         $uploadDir = 'uploads/profiles/';
-        if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+        if (!is_dir($uploadDir)) {
+            if (!mkdir($uploadDir, 0777, true)) {
+                $_SESSION['error'] = "Erreur système : Impossible de créer le dossier de destination.";
+                redirect($_SERVER['HTTP_REFERER']);
+            }
+        }
         
-        $extension = pathinfo($_FILES['photo_profil']['name'], PATHINFO_EXTENSION);
+        if (!is_writable($uploadDir)) {
+            $_SESSION['error'] = "Erreur système : Le dossier de destination n'est pas accessible en écriture.";
+            redirect($_SERVER['HTTP_REFERER']);
+        }
+
+        $extension = strtolower(pathinfo($_FILES['photo_profil']['name'], PATHINFO_EXTENSION));
+        if (!in_array($extension, ['jpg', 'jpeg', 'png', 'webp'])) {
+            $_SESSION['error'] = "Format d'image non supporté (JPG, PNG, WEBP uniquement).";
+            redirect($_SERVER['HTTP_REFERER']);
+        }
+
         $fileName = 'profile_' . $id . '_' . time() . '.' . $extension;
-        if (move_uploaded_file($_FILES['photo_profil']['tmp_name'], $uploadDir . $fileName)) {
+        $photoPath = $uploadDir . $fileName;
+
+        if (move_uploaded_file($_FILES['photo_profil']['tmp_name'], $photoPath)) {
             // Supprimer l'ancienne photo physique
             if (!empty($_SESSION['user_photo']) && file_exists($_SESSION['user_photo'])) {
-                unlink($_SESSION['user_photo']);
+                @unlink($_SESSION['user_photo']);
             }
             
-            $photoPath = $uploadDir . $fileName;
             $stmt = $pdo->prepare("UPDATE users SET photo_profil = ? WHERE id = ?");
             $stmt->execute([$photoPath, $id]);
             $_SESSION['user_photo'] = $photoPath;
+        } else {
+            $_SESSION['error'] = "Erreur lors du transfert de la photo.";
+            redirect($_SERVER['HTTP_REFERER']);
         }
     }
 

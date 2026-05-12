@@ -23,8 +23,9 @@
         @media (max-width: 991.98px) {
             .sidebar { display: none; } /* Hide desktop sidebar */
             .mobile-header { display: flex; justify-content: space-between; align-items: center; }
-            .main-content { height: auto; overflow-y: visible; padding: 20px !important; }
+            .main-content { height: auto; overflow-y: visible; padding: 15px !important; }
             .search-bar-container { display: none !important; } /* Hide big search on mobile */
+            h2 { font-size: 1.5rem !important; }
         }
         
         /* Tableaux adaptatifs */

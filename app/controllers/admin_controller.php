@@ -1,6 +1,6 @@
 <?php
 /**
- * CONTROLEUR ADMIN (PROCEDURAL) - Version Corrigée
+ * CONTROLEUR ADMIN (PROCEDURAL) - 
  */
 
 function check_staff() {
@@ -132,20 +132,27 @@ function admin_car_save() {
     if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
 
     // Image Principale
+    $uploaded_file = null;
     if (isset($_FILES['image_file']) && $_FILES['image_file']['error'] == UPLOAD_ERR_OK) {
+        $uploaded_file = $_FILES['image_file'];
+    } elseif (isset($_FILES['image_file_camera']) && $_FILES['image_file_camera']['error'] == UPLOAD_ERR_OK) {
+        $uploaded_file = $_FILES['image_file_camera'];
+    }
+
+    if ($uploaded_file) {
         // Si on modifie, on supprime l'ancienne image physique
         if ($id) {
             $old = $pdo->prepare("SELECT image_principale FROM cars WHERE id = ?");
             $old->execute([$id]);
             $old_path = $old->fetchColumn();
             if ($old_path && file_exists($old_path) && strpos($old_path, 'uploads/') !== false) {
-                unlink($old_path);
+                @unlink($old_path);
             }
         }
 
-        $extension = pathinfo($_FILES['image_file']['name'], PATHINFO_EXTENSION);
+        $extension = pathinfo($uploaded_file['name'], PATHINFO_EXTENSION);
         $fileName = 'car_' . time() . '_' . uniqid() . '.' . $extension;
-        if (move_uploaded_file($_FILES['image_file']['tmp_name'], $uploadDir . $fileName)) {
+        if (move_uploaded_file($uploaded_file['tmp_name'], $uploadDir . $fileName)) {
             $image_principale = $uploadDir . $fileName;
         }
     }
@@ -157,7 +164,7 @@ function admin_car_save() {
             $old->execute([$id]);
             $old_path = $old->fetchColumn();
             if ($old_path && file_exists($old_path) && strpos($old_path, 'uploads/') !== false) {
-                unlink($old_path);
+                @unlink($old_path);
             }
         }
 
@@ -526,7 +533,7 @@ function admin_gantt() {
     
     $cars = $pdo->query("SELECT id, immatriculation, marque, modele FROM cars ORDER BY marque ASC")->fetchAll();
     
-    $reservations = $pdo->prepare("SELECT r.*, u.nom, u.prenom FROM reservations r JOIN users u ON r.user_id = u.id WHERE (MONTH(r.date_debut) = ? OR MONTH(r.date_fin) = ?) AND (YEAR(r.date_debut) = ? OR YEAR(r.date_fin) = ?)");
+    $reservations = $pdo->prepare("SELECT r.*, u.nom, u.prenom FROM reservations r JOIN users u ON r.user_id = u.id WHERE r.status_reservation NOT IN ('annulee', 'terminee') AND (MONTH(r.date_debut) = ? OR MONTH(r.date_fin) = ?) AND (YEAR(r.date_debut) = ? OR YEAR(r.date_fin) = ?)");
     $reservations->execute([$month, $month, $year, $year]);
     
     render_view('admin/gantt', [

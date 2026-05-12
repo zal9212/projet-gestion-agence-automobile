@@ -21,6 +21,9 @@
         .icon-btn { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; text-decoration: none; color: var(--dark-color); font-size: 1.2rem; }
         .desktop-nav { display: none; padding: 25px 30px; background: white; box-shadow: 0 4px 20px rgba(0,0,0,0.02); position: sticky; top: 0; z-index: 1000; }
         .desktop-nav .nav-links a { color: var(--dark-color); text-decoration: none; font-weight: 500; margin-left: 30px; transition: 0.2s; font-size: 1.05rem; }
+        @media (max-width: 1100px) {
+            .desktop-nav .nav-links a { margin-left: 15px; font-size: 0.95rem; }
+        }
         .desktop-nav .nav-links a:hover { color: var(--accent-yellow); }
         .bottom-nav { position: fixed; bottom: 15px; left: 15px; right: 15px; background: white; border-radius: 30px; display: flex; justify-content: space-around; align-items: center; padding: 12px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.08); z-index: 1000; }
         .bottom-nav a { color: #b0b0b0; font-size: 1.15rem; padding: 8px 14px; border-radius: 20px; text-decoration: none; transition: all 0.3s ease; }
@@ -163,9 +166,11 @@
         <a href="index.php?action=favorites" class="<?= (isset($_GET['action']) && $_GET['action'] == 'favorites') ? 'active' : '' ?>">
             <i class="fa-regular fa-heart"></i>
         </a>
-        <a href="<?= isset($_SESSION['user_id']) ? 'index.php?action=profile' : 'index.php?action=login' ?>" class="<?= (isset($_GET['action']) && in_array($_GET['action'], ['profile'])) ? 'active' : '' ?>">
-            <i class="fa-regular fa-user"></i>
-        </a>
+        <?php if(isset($_SESSION['user_role']) && in_array($_SESSION['user_role'], ['admin', 'employee'])): ?>
+            <a href="index.php?action=admin_dashboard" style="color: var(--accent-yellow);">
+                <i class="fa-solid fa-shield-halved"></i>
+            </a>
+        <?php endif; ?>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

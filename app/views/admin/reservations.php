@@ -1,12 +1,12 @@
 <?php ob_start(); ?>
-<div class="d-flex justify-content-between align-items-center mb-5">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
     <div>
         <h2 class="fw-bold mb-1">Toutes les Réservations</h2>
-        <p class="text-muted">Gérez les demandes et changez les statuts.</p>
+        <p class="text-muted mb-0">Gérez les demandes et changez les statuts.</p>
     </div>
     <div class="d-flex gap-2">
-        <div class="dropdown">
-            <button class="btn btn-outline-dark rounded-pill px-4 dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        <div class="dropdown flex-fill flex-md-initial">
+            <button class="btn btn-outline-dark rounded-pill px-4 dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
                 <i class="fa-solid fa-filter me-2"></i> <?= isset($current_status) ? ucfirst(str_replace('_', ' ', $current_status)) : 'Filtres' ?>
             </button>
             <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-4">
@@ -20,7 +20,7 @@
             </ul>
         </div>
         <?php if($is_admin): ?>
-            <a href="index.php?action=admin_reservations_export" class="btn btn-dark rounded-pill px-4"><i class="fa-solid fa-download me-2"></i> Exporter</a>
+            <a href="index.php?action=admin_reservations_export" class="btn btn-dark rounded-pill px-4 flex-fill flex-md-initial text-nowrap"><i class="fa-solid fa-download me-2"></i> Exporter</a>
         <?php endif; ?>
     </div>
 </div>

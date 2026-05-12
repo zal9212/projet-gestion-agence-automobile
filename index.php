@@ -65,6 +65,6 @@ switch ($action) {
     case 'notif_read':           auth_notif_read(); break;
 
     default:
-        echo "Page introuvable";
+        require 'app/views/404.php';
         break;
 }

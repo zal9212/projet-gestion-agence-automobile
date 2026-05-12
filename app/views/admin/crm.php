@@ -1,6 +1,6 @@
 <?php ob_start(); ?>
-<div class="d-flex justify-content-between align-items-center mb-5">
-    <div><h2 class="fw-bold mb-1">CRM & Clients</h2><p class="text-muted">Gérez votre base de clients, leurs documents KYC et la liste noire.</p></div>
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
+    <div><h2 class="fw-bold mb-1">CRM & Clients</h2><p class="text-muted mb-0">Gérez votre base de clients, leurs documents KYC et la liste noire.</p></div>
 </div>
 <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
     <div class="table-responsive">

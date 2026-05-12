@@ -104,10 +104,15 @@ function front_confirm_reserve() {
     $avec_chauffeur = isset($_POST['avec_chauffeur']) ? 1 : 0;
 
     // --- COHERENCE 1 : VERIFIER DISPONIBILITE REELLE ---
-    $check = $pdo->prepare("SELECT id FROM reservations WHERE car_id = ? AND status_reservation NOT IN ('annulee', 'terminee') AND date_debut <= ? AND date_fin >= ?");
+    // Logique d'intersection de plages : (StartA <= EndB) AND (EndA >= StartB)
+    $check = $pdo->prepare("SELECT id FROM reservations 
+                            WHERE car_id = ? 
+                            AND status_reservation NOT IN ('annulee', 'terminee') 
+                            AND date_debut <= ? 
+                            AND date_fin >= ?");
     $check->execute([$car_id, $date_fin, $date_debut]);
     if ($check->fetch()) {
-        $_SESSION['error'] = "Désolé, ce véhicule vient d'être réservé par quelqu'un d'autre sur ces dates.";
+        $_SESSION['error'] = "Désolé, ce véhicule est déjà réservé ou indisponible sur cette période.";
         redirect("index.php?action=reserve&id=$car_id");
     }
 

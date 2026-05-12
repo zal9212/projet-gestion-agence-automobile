@@ -1,6 +1,6 @@
 <?php ob_start(); ?>
-<div class="d-flex justify-content-between align-items-center mb-5">
-    <div><h2 class="fw-bold mb-1">Comptoir Départs / Retours</h2><p class="text-muted">Gérez les départs et retours des véhicules en direct.</p></div>
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
+    <div><h2 class="fw-bold mb-1">Comptoir Départs / Retours</h2><p class="text-muted mb-0">Gérez les départs et retours des véhicules en direct.</p></div>
 </div>
 <div class="alert alert-warning border-0 rounded-4 shadow-sm p-4 d-flex align-items-center">
     <i class="fa-solid fa-tablet-screen-button fa-2x me-3"></i>

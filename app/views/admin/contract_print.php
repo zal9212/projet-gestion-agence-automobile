@@ -98,8 +98,14 @@
             <div class="signature-box d-flex flex-column align-items-center justify-content-center">
                 <?php 
                 // URL de vérification d'authenticité (Teranga Auto Digital Certificate)
-                $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
-                $verifyUrl = $baseUrl . "/pjgv/index.php?action=verify_contract&id=" . $reservation['id'];
+                $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http");
+                $host = $_SERVER['HTTP_HOST'];
+                // On récupère le chemin du script actuel et on enlève le nom du fichier pour avoir le dossier de base
+                $scriptPath = $_SERVER['SCRIPT_NAME'];
+                $basePath = str_replace('\\', '/', dirname($scriptPath));
+                if ($basePath === '/') $basePath = '';
+                
+                $verifyUrl = "$protocol://$host$basePath/index.php?action=verify_contract&id=" . $reservation['id'];
                 
                 $qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" . urlencode($verifyUrl);
                 ?>

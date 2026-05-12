@@ -1,10 +1,10 @@
 <?php ob_start(); ?>
-<div class="d-flex justify-content-between align-items-center mb-5">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
     <div>
         <h2 class="fw-bold mb-1">Gestion de la Flotte</h2>
-        <p class="text-muted">Gérez vos véhicules, tarifs et disponibilités.</p>
+        <p class="text-muted mb-0">Gérez vos véhicules, tarifs et disponibilités.</p>
     </div>
-    <a href="index.php?action=admin_car_form" class="btn btn-dark rounded-pill px-4"><i class="fa-solid fa-plus me-2"></i> Ajouter Véhicule</a>
+    <a href="index.php?action=admin_car_form" class="btn btn-dark rounded-pill px-4 flex-fill flex-md-initial"><i class="fa-solid fa-plus me-2"></i> Ajouter Véhicule</a>
 </div>
 
 <div class="row g-4">
@@ -22,7 +22,14 @@
             </div>
             
             <div class="bg-light d-flex justify-content-center align-items-center" style="height: 180px; width: 100%; overflow: hidden;">
-                <img src="<?= htmlspecialchars($car['image_principale']) ?>" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+                <?php if(!empty($car['image_principale'])): ?>
+                    <img src="<?= htmlspecialchars($car['image_principale']) ?>" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+                <?php else: ?>
+                    <div class="text-muted d-flex flex-column align-items-center">
+                        <i class="fa-solid fa-car fa-3x mb-2 opacity-25"></i>
+                        <span class="small">Aucune photo</span>
+                    </div>
+                <?php endif; ?>
             </div>
             
             <div class="card-body p-4">

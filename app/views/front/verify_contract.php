@@ -15,12 +15,24 @@
                         TERANGA AUTO
                     </div>
 
+                    <?php 
+                    $isExpired = (strtotime($res['date_fin']) < strtotime(date('Y-m-d')));
+                    ?>
+
                     <div class="text-center mb-5">
-                        <div class="d-inline-block p-3 bg-success bg-opacity-10 rounded-circle mb-3">
-                            <i class="fa-solid fa-circle-check text-success fa-3x"></i>
-                        </div>
-                        <h3 class="fw-bold">Contrat Certifié Conforme</h3>
-                        <p class="text-muted">Ce document est une copie numérique authentique générée par Teranga Auto.</p>
+                        <?php if($isExpired): ?>
+                            <div class="d-inline-block p-3 bg-danger bg-opacity-10 rounded-circle mb-3">
+                                <i class="fa-solid fa-clock-rotate-left text-danger fa-3x"></i>
+                            </div>
+                            <h3 class="fw-bold text-danger">Contrat Expiré</h3>
+                            <p class="text-muted">La durée de validité de ce contrat de location est dépassée.</p>
+                        <?php else: ?>
+                            <div class="d-inline-block p-3 bg-success bg-opacity-10 rounded-circle mb-3">
+                                <i class="fa-solid fa-circle-check text-success fa-3x"></i>
+                            </div>
+                            <h3 class="fw-bold text-success">Contrat Certifié Conforme</h3>
+                            <p class="text-muted">Ce document est une copie numérique authentique générée par Teranga Auto.</p>
+                        <?php endif; ?>
                     </div>
 
                     <div class="row g-4 mb-5">

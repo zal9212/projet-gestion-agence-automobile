@@ -124,7 +124,7 @@ $isEdit = isset($car) && $car;
                         </div>
                         <!-- Inputs cachés -->
                         <input type="file" name="image_file" id="main-photo-file" class="d-none" accept="image/*" onchange="previewMainPhoto(this)">
-                        <input type="file" name="image_file" id="main-photo-camera" class="d-none" accept="image/*" capture="environment" onchange="previewMainPhoto(this)">
+                        <input type="file" name="image_file_camera" id="main-photo-camera" class="d-none" accept="image/*" capture="environment" onchange="previewMainPhoto(this)">
                         <input type="text" name="image_principale" id="image_url" class="form-control bg-light border-0 rounded-pill px-4 mb-3" value="<?= $isEdit ? htmlspecialchars($car['image_principale'] ?? '') : '' ?>" placeholder="URL de l'image (optionnel)">
                         <!-- Boutons d'action -->
                         <div class="d-flex gap-2">
@@ -156,10 +156,6 @@ $isEdit = isset($car) && $car;
                     <div class="col-md-6">
                         <label class="form-label fw-bold text-muted small ms-2">Date Prochaine Assurance</label>
                         <input type="date" name="date_assurance" class="form-control form-control-lg bg-light border-0 rounded-pill px-4" value="<?= $isEdit ? htmlspecialchars($car['date_assurance'] ?? '') : '' ?>">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold text-muted small ms-2">Galerie Photos (Plusieurs fichiers)</label>
-                        <input type="file" name="gallery_files[]" class="form-control form-control-lg bg-light border-0 rounded-pill px-4" accept="image/*" multiple>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-bold text-muted small ms-2">Date Prochaine Visite Technique</label>
