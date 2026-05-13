@@ -62,7 +62,7 @@ function csrf_field() {
 }
 
 /**
- * Vérifie le token CSRF reçu (POST ou GET)
+ * Vérifie le token CSRF reçu si c'est  (POST ou GET)
  */
 function verify_csrf_token($method = 'POST') {
     $token = ($method === 'POST') ? ($_POST['csrf_token'] ?? '') : ($_GET['csrf_token'] ?? '');
