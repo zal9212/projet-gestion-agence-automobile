@@ -7,7 +7,33 @@ require_once 'app/config.php';
 require_once 'app/controllers/front_controller.php';
 require_once 'app/controllers/auth_controller.php';
 require_once 'app/controllers/admin_controller.php';
-require_once 'app/helpers.php';
+require_once 'app/helpers.php'; // Charge déjà ZaixAgent et crée l'instance $zaix
+
+// --- COUCHE DE SÉCURITÉ GLOBALE (ANTI-INJECTION) ---
+function security_scan($data) {
+    global $zaix;
+    if (is_array($data)) {
+        foreach ($data as $val) security_scan($val);
+    } else if (is_string($data)) {
+        if (preg_match('/(union|select|insert|update|delete|drop|alter|--|#|OR\s+[\'"]?\d|SLEEP\(|BENCHMARK\()/i', $data)) {
+            if (isset($zaix)) {
+                $zaix->triggerAttack([
+                    'type'     => 'SQL_INJECTION_NATIVE',
+                    'ip'       => $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0',
+                    'url'      => $_SERVER['REQUEST_URI'],
+                    'severity' => 'CRITICAL',
+                    'message'  => "Bloqué par la sécurité native index.php",
+                    'details'  => ['payload' => $data]
+                ]);
+            }
+            header('HTTP/1.1 403 Forbidden');
+            die("Alerte Sécurité : Activité suspecte détectée.");
+        }
+    }
+}
+security_scan($_GET);
+security_scan($_POST);
+security_scan($_COOKIE);
 
 $action = $_GET['action'] ?? 'home';
 

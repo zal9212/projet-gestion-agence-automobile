@@ -2,6 +2,12 @@
 /**
  * FONCTIONS D'AIDE (HELPERS)
  */
+// Code à mettre dans votre HELPER
+require_once __DIR__ . '/zaix-agent.php'; 
+$zaix = new ZaixAgent([
+    'siteId'  => '282f62cb-3c35-4123-8a81-31a7b5e98b6b',           // Remplacez par votre vrai ID
+   // 'siemUrl' => 'https://votre-domaine-zaix.com' // Ajoutez ceci si votre ZAIX est en ligne
+]);
 
 /**
  * Shorthand pour htmlspecialchars() - Protection XSS universelle

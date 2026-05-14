@@ -14,6 +14,19 @@ function auth_do_login() {
     $password = $_POST['password'] ?? '';
     
     $pdo = get_pdo();
+
+    // 1. Validation du format d'email
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $_SESSION['error'] = "Format d'email invalide.";
+        redirect('index.php?action=login');
+    }
+
+    // 2. Détection supplémentaire de patterns malicieux (Double sécurité)
+    if (preg_match('/(union|select|--|#|OR\s+)/i', $email) || preg_match('/(union|select|--|#|OR\s+)/i', $password)) {
+        $_SESSION['error'] = "Tentative d'intrusion détectée.";
+        redirect('index.php?action=login');
+    }
+
     $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
     $stmt->execute([$email]);
     $user = $stmt->fetch();
@@ -22,6 +35,8 @@ function auth_do_login() {
         $_SESSION['error'] = "Email ou mot de passe incorrect.";
         redirect('index.php?action=login');
     }
+    // 3. Régénération de l'ID de session (Prévention fixation de session)
+    session_regenerate_id(true);
 
     $_SESSION['user_id'] = $user['id'];
     $_SESSION['user_nom'] = $user['nom'];
