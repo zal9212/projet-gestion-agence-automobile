@@ -71,6 +71,7 @@ function verify_csrf_token($method = 'POST') {
         redirect($_SERVER['HTTP_REFERER'] ?? 'index.php');
         exit;
     }
+
 }
 
 
